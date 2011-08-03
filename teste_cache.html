@@ -1,0 +1,200 @@
+<html>
+   <head>
+      <script src="./js/jquery-1.5.1.min.js"></script>
+      <script src="./Cache.js"></script>
+      <script>
+         $(document).ready(function(){
+            //var cache_of_caches = new CacheOfCaches();
+            //var all = cache_of_caches.get_filter({});
+
+            $(".prev").click(function(){
+               $(this).parents("div").find("table.tabela").get(0).prev_page();
+            });
+            $(".next").click(function(){
+               $(this).parents("div").find("table.tabela").get(0).next_page();
+            });
+
+            var st = new SortTable();
+            var st2 = new SortTable();
+            var table = $("table.tabela").get(0);
+            st.transform2sortable(table);
+            var table2 = $("table.tabela2").get(0);
+            st2.transform2sortable(table2);
+            table.draw_loop();
+            table2.draw_loop();
+            //table.draw();
+
+
+            table2.lines_per_page = 2;
+
+            table2.push({col1: "lalala", col2: "lelele"});
+            table2.push({col1: "lilili", col2: "lololo"});
+           
+
+
+            //window.console.log(cache_of_caches.filters);
+
+            $("button.ok_btn").click(function(){
+               var filter = {};
+               if($(this).parents("div.filter").find("div.chk input:not(:checked)").size() > 0) {
+                  var col = $(this).parents("div.filter").find("select.filter_sel").val();
+                  filter[col] = [];
+                  $(this).parents("div.filter").find("div.chk input:checked").each(function(){
+                     filter[col].push($(this).val());
+                  });
+                  window.console.log(filter);
+               }
+               $("table.tabela").get(0).set_filter(filter);
+            });
+            $("button.remove").live("click", function(){
+               var div = $(this).parents("div.columns");
+               $(this).parents("div.col").remove();
+               div.find("select.column").change();
+            });
+            $("table.tabela").get(0).onChangePage = function(page){
+               $("span.page_num").text(page);
+            }
+            $("table.tabela").get(0).onStartPushing = function(page){
+               $("img.loading").show();
+            }
+            $("table.tabela").get(0).onStopPushing = function(page){
+               $("img.loading").hide();
+            }
+
+            for(var i = 0; i < 1000; i++){
+               table.push({col1: "lalala", col2: "lelela", col3: "lilili", col4: "la" + i});
+               table.push({col1: "lalale", col2: "lelela", col3: "lilili", col4: "lb" + i});
+               table.push({col1: "lalala", col2: "lelela", col3: "lilili", col4: "lc" + i});
+               table.push({col1: "lalale", col2: "lelela", col3: "lilili", col4: "ld" + i});
+               table.push({col1: "lalala", col2: "lelela", col3: "lilili", col4: "le" + i});
+               table.push({col1: "lalale", col2: "lelele", col3: "lilili", col4: "lf" + i});
+               table.push({col1: "lalala", col2: "lelele", col3: "lilili", col4: "lg" + i});
+               table.push({col1: "lalala", col2: "lelele", col3: "lilili", col4: "lh" + i});
+               table.push({col1: "lalala", col2: "lelele", col3: "lilili", col4: "li" + i});
+               table.push({col1: "lalale", col2: "lelele", col3: "lilili", col4: "lj" + i});
+               table.push({col1: "lalala", col2: "lelele", col3: "lilili", col4: "lk" + i});
+               table.push({col1: "lalala", col2: "lelele", col3: "lilili", col4: "ll" + i});
+            }
+            $("select.column").live("change", function(){
+               var tmp_arr = [];
+               $(this).parents("div.columns").find("select").each(function(){
+                  if($(this).val() != "") tmp_arr.push($(this).val());
+               });
+               $("table.tabela").get(0).columns = tmp_arr;
+            });
+            var columns = $("table.tabela").get(0).columns;
+            function create_col_selector(selected) {
+               var select = $("<select class='column'>");
+               //var tmp_opt = $("<option>");
+               //select.append(tmp_opt);
+               for(var i = 0; i < columns.length; i++) {
+                 var tmp = $("<option>");
+                 tmp.text(columns[i]);
+                 tmp.val(columns[i]);
+                 tmp.attr("selected", columns[i] == selected);
+                 select.append(tmp);
+               }
+               var div = $("<div class='col'>");
+               div.append(select);
+               div.append("<button class=remove>-</button>");
+               div.append("<br />");
+               $("div.columns").append(div);
+            }
+            for(var i = 0; i < columns.length; i++) {
+               create_col_selector(columns[i]);
+            }
+            $("button.new_column").click(function(){
+               create_col_selector();
+               $(this).parents("div").find("select.column").change();
+            });
+            $(".filter_sel").get(0).populate_filter = function(chk) {
+               $("table.tabela").get(0).when_filter_options(
+               $(this).val(),
+               function(options){
+                  chk.html("");
+                  for(var i = 0; i < options.length; i++)
+                     chk.append($("<input checked=checked type='checkbox' value='" + options[i] + "'>" + options[i] + "</input><br />"))
+               });
+            };
+
+            setTimeout(function(){
+               $(".filter_sel").each(function(){
+                  var chk = $(this).parents("div.filter").find("div.chk");
+                  this.populate_filter(chk);
+               });
+            }, 5000);
+
+            $(".filter_sel").change(function(){
+               var chk = $(this).parents("div.filter").find("div.chk");
+               this.populate_filter(chk);
+            });
+
+
+            for(var j = 0; j < table.columns.length; j++) {
+               $(".filter_sel").append($("<option>" + table.columns[j] + "</option>"));
+            }
+         });
+      </script>
+      <style>
+         #table {
+            position: absolute;
+            display:  block;
+            left:     500px;
+         }
+         .filter {
+            position:         absolute;
+            display:          block;
+            left:             100px;
+            border:           solid black 1px;
+            padding:          5px;
+            border-radius:    5px;
+            background-color: #ccccff;
+         }
+         .chk {
+            display:          block;
+            width:            100px;
+            height:           100px;
+            overflow:         auto;
+            border:           solid black 1px;
+            padding:          5px;
+            margin:           5px;
+            border-radius:    5px;
+            background-color: white;
+         }
+         .loading {
+            display: none;
+         }
+      </style>
+   </head>
+   <body>
+      <div id="table">
+         <table border=1 class="tabela">
+            <thead><img class=loading src="./load.gif" /></thead>
+         </table>
+         <center>
+            <a class=prev>&lt;&lt; Prev</a> - <span class=page_num></span> - <a class=next>Next &gt;&gt;</a>
+         </center>
+      </div>
+      <div id="controller">
+         <div class="columns">
+         </div>
+         <button class="new_column">+</button>
+         <br />
+         <br />
+         <br />
+         <br />
+         <div class="filter">
+            <select class="filter_sel">
+            </select>
+            <div class="chk">
+            </div>
+            <button class="ok_btn">
+               OK
+            </button>
+         </div>
+      </div>
+         <table border=1 class="tabela2">
+            <thead></thead>
+         </table>
+   </body>
+</html>
