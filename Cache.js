@@ -65,6 +65,7 @@ SortTable.prototype.transform2sortable = function(table) {
       //this.draw();
    },
    table.set_filter = function(filter) {
+      this.goto_page(0);
       this.last_filter = this.filter;
       this.filter = filter;
       //this.draw();

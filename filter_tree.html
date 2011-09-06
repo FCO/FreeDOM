@@ -1,0 +1,40 @@
+<html>
+   <head>
+      <script src="./filter_tree.js"></script>
+   </head>
+   <body>
+      <script>
+         var root = new FilterNode();
+         var la = new FilterNode();
+         la.name = "la";
+         var lale = new FilterNode();
+         lale.name = "le";
+         var laleli = new FilterNode();
+         laleli.name = "li";
+         var lalelilo = new FilterNode();
+         lalelilo.name = "lo";
+         var lalelilolu = new FilterNode();
+         lalelilolu.name = "lu";
+         
+         var le = new FilterNode();
+         le.name = "le";
+         var li = new FilterNode();
+         li.name = "li";
+         var lo = new FilterNode();
+         lo.name = "lo";
+         var lu = new FilterNode();
+         lu.name = "lu";
+
+         // root => la => le => li => lo => lu
+         root.put_child(la);
+         la.put_child(lale);
+         lale.put_child(laleli);
+         laleli.put_child(lalelilo);
+         lalelilo.put_child(lalelilolu);
+         root.put_child(le);
+         root.put_child(li);
+         root.put_child(lo);
+         root.put_child(lu);
+      </script>
+   </body>
+</head>
