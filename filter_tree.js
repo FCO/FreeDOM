@@ -284,7 +284,7 @@ FilterNode.prototype = {
          obj_path = path.clone();
       } else {
          obj_path = new FilterPath();
-         obj_path.array = path;
+         obj_path.array = clone(path);
       }
       var first = obj_path.shift();
 
