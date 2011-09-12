@@ -8,7 +8,11 @@ Cache.js
 
 =head1 Classes
 
+Aqui serão descritas as classes contidas nesse arquivo
+
 =head2 SortTable
+
+Classe que faz a transformação de uma tabela comum da C<DOM> numa tabela ordenavel-filtravel
 
 =head3 Exemplo de uso
 
@@ -16,7 +20,7 @@ Cache.js
   var table = document.getElementById("tableid");
   st.transform2sortable(table);
   table.draw_loop();
-  
+
 =head3 Descrição
 
 Representa uma tabela ordenável-filtrável e converte tabelas comuns (C<DOM>) para uso como tal.
@@ -41,8 +45,9 @@ Os métodos são os listados no tópico DOMTable
 
 =head2 DOMTable
 
+Metodos e eventos adicionados ao objeto C<DOM> da tabela atravéz do metodo C<transform2sortable>
 
-=head3 push(data)
+=head3 push(C<data>)
 
 =head4 Recebe
 
@@ -131,7 +136,7 @@ C<void>
 
 Avança uma página na exibição, fazendo a tabela exibir a página posterior à atual.
 
-=head3 goto_page(page)
+=head3 goto_page(C<page>)
 
 =head4 Recebe
 
@@ -145,7 +150,7 @@ C<void>
 
 Avança ou retrocede páginas, fazendo a tabela exibir a página correspondente à C<page>.
 
-=head3 set_lines_per_page(lines_per_page)
+=head3 set_lines_per_page(C<lines_per_page>)
 
 =head4 Recebe
 
@@ -159,7 +164,7 @@ C<void>
 
 Altera a quantidade de linhas exibidas a cada página para C<lines_per_page>
 
-=head3 set_filter(filter)
+=head3 set_filter(C<filter>)
 
 =head4 Recebe
 
@@ -175,7 +180,14 @@ Filtra a tabela a partir dos dados passados no hash C<filter>. O hash deve ser e
 
 Cada chave é o nome de uma coluna e cada valor é um array com os valores daquela coluna selecionados pelo filtro.
 
-=head3 when_filter_options(col, callback)
+  {col1: ["valor1", "valor2"], col2: ["valor3", "valor4"]}
+  
+  // filtrando a tabela pelas colunas "col1" e "col2",
+  // sendo que só mostrará linhas onde
+  // o valor da coluna "col1" seja "valor1" ou "valor2"
+  // e o valor da coluna "col2" seja "valor3" ou "valor4"
+
+=head3 when_filter_options(C<col>, C<callback>)
 
 =head4 Recebe
 
@@ -194,7 +206,7 @@ os valores atualmente contidos e não filtrados na coluna de name C<col>
 
 C<callback(options)> será chamada recebendo um array com todos os valores contidos na coluna após a inserção/filtragem.
 
-=head3 set_columns(columns)
+=head3 set_columns(C<columns>)
 
 =head4 Recebe
 
@@ -210,7 +222,7 @@ Altera a tabela para que exiba as colunas selecionadas em C<columns>, na ordem e
 
 Essa alteração só surtirá efeito após uma chamada explícita ao método C<draw()> ou, um ciclo da função C<draw_loop()>
 
-=head3 sort_by_column(col)
+=head3 sort_by_column(C<col>)
 
 B<Não Implementada>
 
@@ -221,7 +233,7 @@ B<Não Implementada>
 Uma função deve ser atribuída a C<onStartPushing>. Essa função será chamada toda vez que algum valor for C<push()>ed
 
   table.onStartPushing = function(){ window.console.log("pushing something"); }
-  
+
 =head3 Evento onStopPushing
 
 =head4 Descrição
