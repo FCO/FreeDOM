@@ -1,4 +1,238 @@
-// Cache.js
+/**
+
+=pod
+
+=head1 NAME
+
+Cache.js
+
+=head1 Classes
+
+=head2 SortTable
+
+=head3 Exemplo de uso
+
+  var st = new SortTable();
+  var table = document.getElementById("tableid");
+  st.transform2sortable(table);
+  table.draw_loop();
+  
+=head3 Descrição
+
+Representa uma tabela ordenável-filtrável e converte tabelas comuns (C<DOM>) para uso como tal.
+
+=head3 transform2sortable(C<DOMTableObject> | C<jQueryTableObject>)
+
+=head4 Recebe
+
+C<DOMTableObject> : Um objeto DOM tabela pré-existente.
+
+C<jQueryTableObject> : Um objeto jQuery contendo unicamente uma tabela.
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Embute métodos referentes à tabela ordenável-filtrável diretamente na DOM da tabela.
+
+Os métodos são os listados no tópico DOMTable
+
+=head2 DOMTable
+
+
+=head3 push(data)
+
+=head4 Recebe
+
+C<data> : Um C<hash> ou C<array de hashes>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Recebe um C<hash> ou C<array de hashes> contendo em cada chave o nome de uma coluna e o valor do dado naquela coluna.
+Se um C<array de hashes> for passado para C<push()>, todas as entradas serão incluídas na tabela.
+
+  table.push([{col1: "valor1", col2: "valor2} , {col1: "valor3", col2: "valor4"} ] );
+
+=head3 draw()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Desenha a tabela no momento em que é chamado.
+
+=head3 draw_loop()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Inicia um loop assíncrono que, a cada laço, redesenha a tabela em tela.
+
+=head3 getPage()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+Um valor inteiro representando a página atual exibida pela tabela.
+
+=head4 Descrição
+
+Função utilizada para obter a página exibida na representação atual.
+
+A primeira página é representada pelo valor C<1>.
+
+=head3 prev_page()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Retrocede uma página na exibição, fazendo a tabela exibir a página anterior à atual.
+
+=head3 next_page()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Avança uma página na exibição, fazendo a tabela exibir a página posterior à atual.
+
+=head3 goto_page(page)
+
+=head4 Recebe
+
+C<page> : Um argumento do tipo inteiro.
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Avança ou retrocede páginas, fazendo a tabela exibir a página correspondente à C<page>.
+
+=head3 set_lines_per_page(lines_per_page)
+
+=head4 Recebe
+
+C<lines_per_page> : Um argumento do tipo inteiro
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Altera a quantidade de linhas exibidas a cada página para C<lines_per_page>
+
+=head3 set_filter(filter)
+
+=head4 Recebe
+
+C<filter> : Um hash no formato especificado abaixo
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Filtra a tabela a partir dos dados passados no hash C<filter>. O hash deve ser estrutrado da seguinte forma:
+
+Cada chave é o nome de uma coluna e cada valor é um array com os valores daquela coluna selecionados pelo filtro.
+
+=head3 when_filter_options(col, callback)
+
+=head4 Recebe
+
+C<col> : Uma string contendo o nome de uma coluna
+
+C<callback> : Uma função a ser executada. 
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Seleciona C<callback(options)> para ser invocada quando filtros forem aplicados ou dados forem inseridos, de modo que altere
+os valores atualmente contidos e não filtrados na coluna de name C<col>
+
+C<callback(options)> será chamada recebendo um array com todos os valores contidos na coluna após a inserção/filtragem.
+
+=head3 set_columns(columns)
+
+=head4 Recebe
+
+C<columns> : Um array de strings
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Altera a tabela para que exiba as colunas selecionadas em C<columns>, na ordem em que foi passado. 
+
+Essa alteração só surtirá efeito após uma chamada explícita ao método C<draw()> ou, um ciclo da função C<draw_loop()>
+
+=head3 sort_by_column(col)
+
+B<Não Implementada>
+
+=head3 Evento onStartPushing
+
+=head4 Descrição
+
+Uma função deve ser atribuída a C<onStartPushing>. Essa função será chamada toda vez que algum valor for C<push()>ed
+
+  table.onStartPushing = function(){ window.console.log("pushing something"); }
+  
+=head3 Evento onStopPushing
+
+=head4 Descrição
+
+Uma função deve ser atribuída a C<onStopPushing>. Essa função será chamada toda vez que o processamento de C<push()> terminar
+
+  table.onStopPushing = function(){ window.console.log("something has been pushed"); }
+
+=cut
+
+*/
 
 function get_dom(obj) {
    if(obj.get != null) {
@@ -6,11 +240,6 @@ function get_dom(obj) {
    }
    return obj;
 }
-
-
-
-
-
 
 function SortTable(){
    if(SortTable.id == null)
@@ -23,13 +252,13 @@ SortTable.prototype = {
    all_columns:    [],
 };
 
-
 SortTable.prototype.transform2sortable = function(table) {
+   
+   table = get_dom(table);
    table.draw_loop = function(){
       var _this = this;
       setInterval(function(){_this.draw()}, 100);
    };
-   table = get_dom(table);
    table.cache_of_caches = new CacheOfCaches();
    table.cache_of_caches.table = table;
    table.all             = table.cache_of_caches.get_filter({});
@@ -173,16 +402,6 @@ SortTable.prototype.transform2sortable = function(table) {
    //table.make_skell();
    //table.draw();
 }
-
-
-
-
-
-
-
-
-
-
 
 function Cache() {
    if(Cache.id == null)
@@ -341,16 +560,6 @@ Cache.prototype = {
    }
 };
 
-
-
-
-
-
-
-
-
-
-
 function SortLine() {
    if(SortLine.id == null)
       SortLine.id = 1;
@@ -385,15 +594,6 @@ SortLine.prototype = {
       return tmp;
    }
 };
-
-
-
-
-
-
-
-
-
 
 function CacheOfCaches() {
    this.filters = {};
@@ -652,14 +852,3 @@ CacheOfCaches.prototype = {
       });
    }
 };
-
-
-
-
-
-
-
-
-
-
-
