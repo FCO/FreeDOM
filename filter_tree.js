@@ -28,7 +28,35 @@ function FilterPath() {
 
 FilterPath.prototype = {
    constructor: "FilterPath",
-   array: [],
+   set array(arr){
+      this.test_order(arr);
+      this._array = arr;
+   },
+   get array() {
+      return this._array;
+   },
+   what_to_add_to_transform_in: function(sub_path){
+      if(sub_path.constructor == "FilterPath")
+         path = clone(sub_path.array);
+      else if(sub_path.constructor() == "String")
+         path.push(sub_path);
+      else if(sub_path.length != null)
+         path = clone(sub_path);
+      var ret_path = new FilterPath();
+      ret_path.array = clone(to_add(path, this.array));
+      return ret_path;
+   },
+   what_to_subtract_to_transform_in: function(sub_path){
+      if(sub_path.constructor == "FilterPath")
+         path = clone(sub_path.array);
+      else if(sub_path.constructor() == "String")
+         path.push(sub_path);
+      else if(sub_path.length != null)
+         path = clone(sub_path);
+      var ret_path = new FilterPath();
+      ret_path.array = clone(to_subtract(path, this.array));
+      return ret_path;
+   },
    number_of_changes_to_transform_in: function(sub_path){
       if(sub_path.constructor == "FilterPath")
          path = clone(sub_path.array);
@@ -36,7 +64,7 @@ FilterPath.prototype = {
          path.push(sub_path);
       else if(sub_path.length != null)
          path = clone(sub_path);
-      return to_add(path, this.array).length + to_subtract(path, this.array).length;
+      return to_add(path, clone(this.array)).length + to_subtract(path, clone(this.array)).length;
    },
    toString: function() {
       return this.string;
@@ -57,6 +85,7 @@ FilterPath.prototype = {
          path = clone(sub_path);
       while(path.length > 0)
          this.array.push(path.shift());
+      this.test_order(this.array);
    },
    shift: function() {
       return this.array.shift();
@@ -82,6 +111,18 @@ FilterPath.prototype = {
             throw "Base (" + path.string + ") should be smaller than the path (" + this.string + ")";
          this.array.unshift(val);
       }
+   },
+   test_order: function(array) {
+      var last;
+      for(var i = 0; i < array.length; i++) {
+         if(last != null && last >= array[i])
+            this.die_by_order(array);
+         last = array[i];
+      }
+      return true;
+   },
+   die_by_order: function(array) {
+      throw "The array (" + array.join(", ") + ") should be a ordered array";
    },
    get length() {
       return this.array.length;
@@ -137,6 +178,7 @@ FilterNode.prototype = {
    children: [],
    name: null,
    put_child: function(node) {
+      node.parent = this;
       for(var i = 0; i < this.children.length; i++){
          if(this.children[i].name > node.name){
             this.children.splice(i, 0, node);
@@ -270,14 +312,13 @@ FilterNode.prototype = {
          }
          for(var i = 0; i < stmp.length; i++)
             possible_array.push(stmp[i]);
-         window.console.log("troca? " + (to_subtract(path, possible_array).length + to_add(path, possible_array).length) + " < " + (to_subtract(path, array).length + to_add(path, array).length));
+         //window.console.log("troca? " + (to_subtract(path, possible_array).length + to_add(path, possible_array).length) + " < " + (to_subtract(path, array).length + to_add(path, array).length));
          if((to_subtract(path, possible_array).length + to_add(path, possible_array).length) < (to_subtract(path, array).length + to_add(path, array).length))
             array = possible_array;
       }
       return array;
    },
    get_partial_paths: function(path) {
-      window.console.log(this.name + ".get_partial_paths(" + path + ")");
       var paths = [];
       var obj_path;
       if(path.constructor == "FilterPath") {
@@ -288,12 +329,8 @@ FilterNode.prototype = {
       }
       var first = obj_path.shift();
 
-      window.console.log("first: " + first);
       var kids = this.get_every_kid(first);
-      window.console.log("obj_path: " + obj_path.length);
       if(obj_path.length <= 0) {
-         window.console.log("on if");
-         window.console.log("kids: " + kids);
          return kids;
       }
       var kids2path = clone(kids);
@@ -301,8 +338,6 @@ FilterNode.prototype = {
          paths.push(kids2path.shift());
       for(var i = 0; i < kids.length; i++) {
          var internal_kids = this.get_path(kids[i].clone()).get_partial_paths(obj_path);
-         //var internal_kids = this.get_path(kids[i].clone()).get_every_kid(path);
-         window.console.log("internal_kids: " + internal_kids);
          for(var j = 0; j < internal_kids.length; j++) {
             var kid = kids[i].clone();
             internal_kids[j].set_base(kid);
@@ -311,70 +346,38 @@ FilterNode.prototype = {
       }
       return paths;
    },
-   //get_partial_paths: function(path) {
-   //   window.console.log(this.name + ".get_partial_paths(" + path + ")");
-   //   var paths = [];
-   //   var first = path.shift();
-   //   var every_kid = this.get_every_kid(first);
-   //   for(var i = 0; i < every_kid.length; i++){
-   //      var actual_path = every_kid[i];
-   //      window.console.log("actual_path: " + actual_path);
-   //      if(path.length > 0){
-   //         window.console.log("dentro do if");
-   //         var tmp = this.get_path(actual_path).get_partial_paths(path);
-   //         window.console.log("returned: " + tmp);
-   //         for(var j = 0; j < tmp.length; j++){
-   //            var a_path = clone(actual_path);
-   //            window.console.log("a_path: " + a_path);
-   //            for(var k = 0; k < tmp[j].length; k++){
-   //               a_path.push(tmp[j][k]);
-   //            }
-   //            paths.push(a_path);
-   //         }
-   //      } else {
-   //         paths.push(actual_path);
-   //      }
-   //   }
-   //   return paths;
-   //},
-//   get_partial_paths: function(path) {
-//      var paths = [];
-//      while(path.length > 0) {
-//         var first = path.shift();
-//         var every_kid = this.get_every_kid(first);
-//window.console.log("every_kid");
-//window.console.log(every_kid);
-//         for(var i = 0; i < every_kid.length; i++){
-//            var tmp_path = clone(every_kid[i]);
-//            var kid = this.get_path(every_kid[i]);
-//            if(paths.length > 0) {
-//               var tmp = kid.get_partial_paths(path);
-//               for(var j = 0; j < tmp.length; j++){
-//                  for(var k = 0; k < tmp[j].length; k++){
-//                     tmp_path.push(tmp[j][k]);
-//                  }
-//                  paths.push(tmp_path);
-//               }
-//            } else {
-//               tmp_path.push(kid.name);
-//               paths.push(tmp_path);
-//            }
-//         }
-//      }
-//window.console.log("returning paths");
-//window.console.log(paths);
-//      return paths;
-//   },
    get_closer_path: function(path) {
       var paths = this.get_partial_paths(path);
-      var possibilities = [];
+      var min = null;
+      var closer;
       for(var i = 0; i < paths.length; i++){
-         var changes = {};
-         changes.path = paths[i];
-         changes.qtt  = to_subtract(path, paths[i]).length + to_add(path, paths[i]).length;
-         possibilities.push(changes)
+         var changes = paths[i].number_of_changes_to_transform_in(path);
+         if(min == null || min > changes){
+            min = changes;
+            closer = paths[i];
+         }
       }
-      return possibilities.sort(function(vi, v2){v1.qtt > v2.qtt})[0];
+      return closer;
+   },
+   way_to_get_path: function(path) {
+      var closer = this.get_closer_path(path);
+      var str = "";
+      var close = "";
+      var to_add = closer.what_to_add_to_transform_in(path);
+      var to_sub = closer.what_to_subtract_to_transform_in(path);
+      if(to_add.length > 0 && to_sub > 0) {
+         str   += "( ";
+         close += " )";
+      }
+      str += closer;
+      if(to_add.length > 0) {
+         str += " + " + this.way_to_get_path(to_add);
+      }
+      str += close;
+      if(to_sub.length > 0) {
+         str += " - " + this.way_to_get_path(to_sub);
+      }
+      return str;
    },
    get_every_kid: function(name) {
       var paths = [];
@@ -396,45 +399,41 @@ FilterNode.prototype = {
       }
       return paths
    },
-   force_partial_path: function(path){
-//window.console.log(path);
-      var array = [];
-      var path_cp = path;
-      while(path.length > 0) {
-         var first = path.shift();
-         var jump_value = path.length;
-         if(jump_value < 0)
-            jump_value = 0;
-         if(this.has_kid(first, jump_value)) {
-            var sub_path = this.kid_path(first);
-//window.console.log(sub_path);
-            var tmp_sub = [];
-            if(typeof(sub_path) == typeof([]))
-               tmp_sub = sub_path;
-            else
-               tmp_sub.push(sub_path);
-            //array.push(tmp_sub);
-            var kid_act_path = [];
-            while(tmp_sub.length > 0) {
-               var s_tmp = tmp_sub.shift()
-               if(s_tmp != undefined)
-                  kid_act_path.push(s_tmp);
-                  array.push(s_tmp);
-            }
-            var tmp_str = this.get_path(kid_act_path).partial_path(path);
-            var tmp = [];
-            if(typeof(tmp_str) == typeof([]))
-               tmp = tmp_str;
-            else
-               tmp.push(tmp_str);
-            while(tmp.length > 0) {
-               var f_tmp = tmp.shift()
-               if(f_tmp != undefined)
-                  array.push(f_tmp);
-            }
-            return array;
-         }
+   'parent': null,
+   set func_to_add(func){
+      this._func_to_add = func;
+   },
+   get func_to_add(){
+      if(this._func_to_add != null)
+         return this._func_to_add;
+      if(this.parent != null)
+         this._func_to_add = this.parent.func_to_add;
+      return this._func_to_add;
+   },
+   set func_to_subtract(func){
+      this._func_to_subtract = func;
+   },
+   get func_to_subtract(){
+      if(this._func_to_subtract != null)
+         return this._func_to_subtract;
+      if(this.parent != null)
+         this._func_to_subtract = this.parent.func_to_subtract;
+      return this._func_to_subtract;
+   },
+   get_value_from_path: function(path){
+      var ret;
+      var closer = this.get_closer_path(path);
+      var to_add = closer.what_to_add_to_transform_in(path);
+      var to_sub = closer.what_to_subtract_to_transform_in(path);
+      ret = closer;
+      window.console.log("closer: " + closer + "; to_add: " + to_add + "; to_sub: " + to_sub);
+      if(to_add.length > 0 && this.func_to_add != null) {
+         ret = this.func_to_add(ret.clone(), this.get_value_from_path(to_add.clone()));
       }
+      if(to_sub.length > 0 && this.func_to_subtract != null) {
+         ret = this.func_to_subtract(ret.clone(), this.get_value_from_path(to_sub.clone()));
+      }
+      return ret;
    },
    value: null
 };
