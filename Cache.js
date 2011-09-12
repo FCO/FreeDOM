@@ -6,7 +6,7 @@
 
 Cache.js
 
-=head1 Classes
+=head1 API Externa
 
 Aqui serão descritas as classes contidas nesse arquivo
 
@@ -242,6 +242,8 @@ Uma função deve ser atribuída a C<onStopPushing>. Essa função será chamada toda 
 
   table.onStopPushing = function(){ window.console.log("something has been pushed"); }
 
+=head1 Classes Internas
+
 =cut
 
 */
@@ -415,6 +417,16 @@ SortTable.prototype.transform2sortable = function(table) {
    //table.draw();
 }
 
+/**
+
+=pod
+
+=head2 Cache
+
+=cut
+
+**/
+
 function Cache() {
    if(Cache.id == null)
       Cache.id = 1;
@@ -572,6 +584,16 @@ Cache.prototype = {
    }
 };
 
+/**
+
+=pod
+
+=head2 SortLine
+
+=cut
+
+**/
+
 function SortLine() {
    if(SortLine.id == null)
       SortLine.id = 1;
@@ -606,6 +628,16 @@ SortLine.prototype = {
       return tmp;
    }
 };
+
+/**
+
+=pod
+
+=head2 CacheOfCaches
+
+=cut
+
+**/
 
 function CacheOfCaches() {
    this.filters = {};
