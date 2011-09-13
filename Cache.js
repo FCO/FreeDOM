@@ -51,7 +51,7 @@ Metodos e eventos adicionados ao objeto C<DOM> da tabela atravéz do metodo C<tra
 
 =head4 Recebe
 
-C<data> : Um C<hash> ou C<array de hashes>
+C<data> : Um C<hash> ou C<array> de C<hashes>
 
 =head4 Retorna
 
@@ -59,8 +59,8 @@ C<void>
 
 =head4 Descrição
 
-Recebe um C<hash> ou C<array de hashes> contendo em cada chave o nome de uma coluna e o valor do dado naquela coluna.
-Se um C<array de hashes> for passado para C<push()>, todas as entradas serão incluídas na tabela.
+Recebe um C<hash> ou C<array> de C<hashes> contendo em cada chave o nome de uma coluna e o valor do dado naquela coluna.
+Se um C<array> de C<hashes> for passado para C<push()>, todas as entradas serão incluídas na tabela.
 
   table.push([{col1: "valor1", col2: "valor2} , {col1: "valor3", col2: "valor4"} ] );
 
@@ -176,9 +176,9 @@ C<void>
 
 =head4 Descrição
 
-Filtra a tabela a partir dos dados passados no hash C<filter>. O hash deve ser estrutrado da seguinte forma:
+Filtra a tabela a partir dos dados passados no C<hash> C<filter>. O C<hash> deve ser estrutrado da seguinte forma:
 
-Cada chave é o nome de uma coluna e cada valor é um array com os valores daquela coluna selecionados pelo filtro.
+Cada chave é o nome de uma coluna e cada valor é um C<array> com os valores daquela coluna selecionados pelo filtro.
 
   {col1: ["valor1", "valor2"], col2: ["valor3", "valor4"]}
   
@@ -191,7 +191,7 @@ Cada chave é o nome de uma coluna e cada valor é um array com os valores daquela
 
 =head4 Recebe
 
-C<col> : Uma string contendo o nome de uma coluna
+C<col> : Uma C<string> contendo o nome de uma coluna
 
 C<callback> : Uma função a ser executada. 
 
@@ -204,13 +204,13 @@ C<void>
 Seleciona C<callback(options)> para ser invocada quando filtros forem aplicados ou dados forem inseridos, de modo que altere
 os valores atualmente contidos e não filtrados na coluna de name C<col>
 
-C<callback(options)> será chamada recebendo um array com todos os valores contidos na coluna após a inserção/filtragem.
+C<callback(options)> será chamada recebendo um C<array> com todos os valores contidos na coluna após a inserção/filtragem.
 
 =head3 set_columns(C<columns>)
 
 =head4 Recebe
 
-C<columns> : Um array de strings
+C<columns> : Um C<array> de C<string>s
 
 =head4 Retorna
 
