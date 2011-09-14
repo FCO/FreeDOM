@@ -14,13 +14,6 @@ Aqui serão descritas as classes contidas nesse arquivo
 
 Classe que faz a transformação de uma tabela comum da C<DOM> numa tabela ordenavel-filtravel
 
-=head3 Exemplo de uso
-
-  var st = new SortTable();
-  var table = document.getElementById("tableid");
-  st.transform2sortable(table);
-  table.draw_loop();
-
 =head3 Descrição
 
 Representa uma tabela ordenável-filtrável e converte tabelas comuns (C<DOM>) para uso como tal.
@@ -559,13 +552,6 @@ C<data> : um C<hash> ou um C<array> de C<hash>es
 
 C<void>
 
-=head3 Exemplo  
-
-  push: function(data){
-      if(this.onStartPushing != null && typeof(this.onStartPushing) == typeof(function(){})) {
-         this.onStartPushing();
-      }
-
 =head4 Descrição
 
 O método C<push> insere uma ou mais linhas no cache. Recebe essas linhas como um C<hash>
@@ -625,7 +611,7 @@ das tabelas.
 **/
    
    push_thread: function() {
-      //window.console.log("push_thread()");
+      //window.console.log("pushpush_thread()");
       var line = this.buffer.shift();
       var do_it_again = false;
       if(line != null) {
@@ -650,7 +636,7 @@ das tabelas.
 
 =head4 Recebe
 
-C<line> : recebe as linhas do cache
+C<line> : recebe uma linha do cache
 
 =head4 Retorna
 
@@ -658,7 +644,7 @@ C<void>
 
 =head4 Descrição
 
-Insere as linhas nas tabelas.
+Insere a linha recebida no cashe.
 
 =cut
 
@@ -769,7 +755,7 @@ C<void>
 
 =head4 Descrição
 
-Refaz as linhas.
+Método utilizado para reconstruir uma linha quando solicitado.
 
 =cut
 
@@ -783,7 +769,71 @@ Refaz as linhas.
 
 =pod
 
-=head3  when_line(callback)
+=head3  when_line(C<callback>)
+
+=head4 Recebe
+
+C<callback>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Sincroniza a posição de linhas do cache, utilizando uma comparação de posições com os dados do filtro que é um uma 
+C<string> via Json, envia para o C<hash> e disponibiliza com o C<callback> com o método C<wait_for_line>.
+
+=cut
+
+**/  
+   
+   
+   when_line: function(callback) {
+      this.wait_for_line(this.current_line++, callback);
+   },
+
+/**
+
+=pod
+
+=head3  wait_for_line(C<line_num, callback>)
+
+=head4 Recebe
+
+C<line_num, callback> : Recebe o número da linha com o line_num e linha com o callback
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+ele atua sincronizando a linha pelo seu número. É utilizado pelo método C<when_line>
+
+=cut
+
+**/  
+   
+   wait_for_line: function(line_num, callback) {
+      var line = this.lines[line_num];
+      if(line != null) {
+         callback(line);
+      } else if(this.push_thread_id == null && ! this.processing){
+      //} else if(this.push_thread_id == null){
+         //window.console.log("No more pushed itens");
+         callback(null);
+      } else {
+         var _this = this;
+         setTimeout(function(){_this.wait_for_line(line_num, callback)}, 0);
+      }
+   },
+
+ /**
+
+=pod
+
+=head3  wait_for_line(C<line_num, callback>)
 
 =head4 Recebe
 
@@ -801,29 +851,32 @@ Volta uma linha
 
 **/  
    
-   
-   when_line: function(callback) {
-      this.wait_for_line(this.current_line++, callback);
-   },
-
-   wait_for_line: function(line_num, callback) {
-      var line = this.lines[line_num];
-      if(line != null) {
-         callback(line);
-      } else if(this.push_thread_id == null && ! this.processing){
-      //} else if(this.push_thread_id == null){
-         //window.console.log("No more pushed itens");
-         callback(null);
-      } else {
-         var _this = this;
-         setTimeout(function(){_this.wait_for_line(line_num, callback)}, 0);
-      }
-   },
-
    reset: function(){
       this.current_line = 0;
    },
 
+/**
+
+=pod
+
+=head3  log_buffer()
+
+=head4 Recebe
+
+C<>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+
+
+=cut
+
+**/   
+   
    log_buffer: function(){
       //window.console.log(this.buffer);
    },
