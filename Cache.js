@@ -8,11 +8,11 @@ Cache.js
 
 =head1 API Externa
 
-Aqui ser√£o descritas as classes contidas nesse arquivo
+Aqui ser„o descritas as classes contidas nesse arquivo
 
 =head2 SortTable
 
-Classe que faz a transforma√ß√£o de uma tabela comum da C<DOM> numa tabela ordenavel-filtravel
+Classe que faz a transformaÁ„o de uma tabela comum da C<DOM> numa tabela ordenavel-filtravel
 
 =head3 Exemplo de uso
 
@@ -21,15 +21,15 @@ Classe que faz a transforma√ß√£o de uma tabela comum da C<DOM> numa tabela orden
   st.transform2sortable(table);
   table.draw_loop();
 
-=head3 Descri√ß√£o
+=head3 DescriÁ„o
 
-Representa uma tabela orden√°vel-filtr√°vel e converte tabelas comuns (C<DOM>) para uso como tal.
+Representa uma tabela orden·vel-filtr·vel e converte tabelas comuns (C<DOM>) para uso como tal.
 
 =head3 transform2sortable(C<DOMTableObject> | C<jQueryTableObject>)
 
 =head4 Recebe
 
-C<DOMTableObject> : Um objeto DOM tabela pr√©-existente.
+C<DOMTableObject> : Um objeto DOM tabela prÈ-existente.
 
 C<jQueryTableObject> : Um objeto jQuery contendo unicamente uma tabela.
 
@@ -37,15 +37,15 @@ C<jQueryTableObject> : Um objeto jQuery contendo unicamente uma tabela.
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-Embute m√©todos referentes √† tabela orden√°vel-filtr√°vel diretamente na DOM da tabela.
+Embute mÈtodos referentes ‡ tabela orden·vel-filtr·vel diretamente na DOM da tabela.
 
-Os m√©todos s√£o os listados no t√≥pico DOMTable
+Os mÈtodos s„o os listados no tÛpico DOMTable
 
 =head2 DOMTable
 
-Metodos e eventos adicionados ao objeto C<DOM> da tabela atrav√©z do metodo C<transform2sortable>
+Metodos e eventos adicionados ao objeto C<DOM> da tabela atravÈz do metodo C<transform2sortable>
 
 =head3 push(C<data>)
 
@@ -57,10 +57,10 @@ C<data> : Um C<hash> ou C<array> de C<hashes>
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
 Recebe um C<hash> ou C<array> de C<hashes> contendo em cada chave o nome de uma coluna e o valor do dado naquela coluna.
-Se um C<array> de C<hashes> for passado para C<push()>, todas as entradas ser√£o inclu√≠das na tabela.
+Se um C<array> de C<hashes> for passado para C<push()>, todas as entradas ser„o incluÌdas na tabela.
 
   table.push([{col1: "valor1", col2: "valor2} , {col1: "valor3", col2: "valor4"} ] );
 
@@ -74,9 +74,9 @@ C<void>
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-Desenha a tabela no momento em que √© chamado.
+Desenha a tabela no momento em que È chamado.
 
 =head3 draw_loop()
 
@@ -88,9 +88,9 @@ C<void>
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-Inicia um loop ass√≠ncrono que, a cada la√ßo, redesenha a tabela em tela.
+Inicia um loop assÌncrono que, a cada laÁo, redesenha a tabela em tela.
 
 =head3 getPage()
 
@@ -100,13 +100,13 @@ C<void>
 
 =head4 Retorna
 
-Um valor inteiro representando a p√°gina atual exibida pela tabela.
+Um valor inteiro representando a p·gina atual exibida pela tabela.
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-Fun√ß√£o utilizada para obter a p√°gina exibida na representa√ß√£o atual.
+FunÁ„o utilizada para obter a p·gina exibida na representaÁ„o atual.
 
-A primeira p√°gina √© representada pelo valor C<1>.
+A primeira p·gina È representada pelo valor C<1>.
 
 =head3 prev_page()
 
@@ -118,9 +118,9 @@ C<void>
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-Retrocede uma p√°gina na exibi√ß√£o, fazendo a tabela exibir a p√°gina anterior √† atual.
+Retrocede uma p·gina na exibiÁ„o, fazendo a tabela exibir a p·gina anterior ‡ atual.
 
 =head3 next_page()
 
@@ -132,9 +132,9 @@ C<void>
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-Avan√ßa uma p√°gina na exibi√ß√£o, fazendo a tabela exibir a p√°gina posterior √† atual.
+AvanÁa uma p·gina na exibiÁ„o, fazendo a tabela exibir a p·gina posterior ‡ atual.
 
 =head3 goto_page(C<page>)
 
@@ -146,9 +146,9 @@ C<page> : Um argumento do tipo inteiro.
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-Avan√ßa ou retrocede p√°ginas, fazendo a tabela exibir a p√°gina correspondente √† C<page>.
+AvanÁa ou retrocede p·ginas, fazendo a tabela exibir a p·gina correspondente ‡ C<page>.
 
 =head3 set_lines_per_page(C<lines_per_page>)
 
@@ -160,9 +160,9 @@ C<lines_per_page> : Um argumento do tipo inteiro
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-Altera a quantidade de linhas exibidas a cada p√°gina para C<lines_per_page>
+Altera a quantidade de linhas exibidas a cada p·gina para C<lines_per_page>
 
 =head3 set_filter(C<filter>)
 
@@ -174,16 +174,16 @@ C<filter> : Um hash no formato especificado abaixo
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
 Filtra a tabela a partir dos dados passados no C<hash> C<filter>. O C<hash> deve ser estrutrado da seguinte forma:
 
-Cada chave √© o nome de uma coluna e cada valor √© um C<array> com os valores daquela coluna selecionados pelo filtro.
+Cada chave È o nome de uma coluna e cada valor È um C<array> com os valores daquela coluna selecionados pelo filtro.
 
   {col1: ["valor1", "valor2"], col2: ["valor3", "valor4"]}
   
   // filtrando a tabela pelas colunas "col1" e "col2",
-  // sendo que s√≥ mostrar√° linhas onde
+  // sendo que sÛ mostrar· linhas onde
   // o valor da coluna "col1" seja "valor1" ou "valor2"
   // e o valor da coluna "col2" seja "valor3" ou "valor4"
 
@@ -193,18 +193,18 @@ Cada chave √© o nome de uma coluna e cada valor √© um C<array> com os valores da
 
 C<col> : Uma C<string> contendo o nome de uma coluna
 
-C<callback> : Uma fun√ß√£o a ser executada. 
+C<callback> : Uma funÁ„o a ser executada. 
 
 =head4 Retorna
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
 Seleciona C<callback(options)> para ser invocada quando filtros forem aplicados ou dados forem inseridos, de modo que altere
-os valores atualmente contidos e n√£o filtrados na coluna de name C<col>
+os valores atualmente contidos e n„o filtrados na coluna de name C<col>
 
-C<callback(options)> ser√° chamada recebendo um C<array> com todos os valores contidos na coluna ap√≥s a inser√ß√£o/filtragem.
+C<callback(options)> ser· chamada recebendo um C<array> com todos os valores contidos na coluna apÛs a inserÁ„o/filtragem.
 
 =head3 set_columns(C<columns>)
 
@@ -216,29 +216,29 @@ C<columns> : Um C<array> de C<string>s
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
 Altera a tabela para que exiba as colunas selecionadas em C<columns>, na ordem em que foi passado. 
 
-Essa altera√ß√£o s√≥ surtir√° efeito ap√≥s uma chamada expl√≠cita ao m√©todo C<draw()> ou, um ciclo da fun√ß√£o C<draw_loop()>
+Essa alteraÁ„o sÛ surtir· efeito apÛs uma chamada explÌcita ao mÈtodo C<draw()> ou, um ciclo da funÁ„o C<draw_loop()>
 
 =head3 sort_by_column(C<col>)
 
-B<N√£o Implementada>
+B<N„o Implementada>
 
 =head3 Evento onStartPushing
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-Uma fun√ß√£o deve ser atribu√≠da a C<onStartPushing>. Essa fun√ß√£o ser√° chamada toda vez que algum valor for C<push()>ed
+Uma funÁ„o deve ser atribuÌda a C<onStartPushing>. Essa funÁ„o ser· chamada toda vez que algum valor for C<push()>ed
 
   table.onStartPushing = function(){ window.console.log("pushing something"); }
 
 =head3 Evento onStopPushing
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-Uma fun√ß√£o deve ser atribu√≠da a C<onStopPushing>. Essa fun√ß√£o ser√° chamada toda vez que o processamento de C<push()> terminar
+Uma funÁ„o deve ser atribuÌda a C<onStopPushing>. Essa funÁ„o ser· chamada toda vez que o processamento de C<push()> terminar
 
   table.onStopPushing = function(){ window.console.log("something has been pushed"); }
 
@@ -423,7 +423,7 @@ SortTable.prototype.transform2sortable = function(table) {
 
 =head2 Cache
 
-O cache √© um conjunto de linhas da tabela.
+O cache È um conjunto de linhas da tabela.
 
 =head3 Cache()
 
@@ -435,9 +435,9 @@ C<void>
 
 C<Cache Object> : Um novo obj da classe Cache
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-O m√©todo Cache() √© o construtor.
+O mÈtodo Cache() È o construtor.
 
 =cut
 
@@ -473,12 +473,12 @@ C<column> : C<string> representando o nome de uma coluna.
 
 =head4 Retorna
 
-C<array> : Um C<array> com todas as op√ß√µes de valor daquela coluna
+C<array> : Um C<array> com todas as opÁıes de valor daquela coluna
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-O m√©todo C<get_filter_options> quando chamado ele retornar√° todos os valores a serem mostrados
-na coluna cujo o nome foi passado como par√¢metro.
+O mÈtodo C<get_filter_options> quando chamado ele retornar· todos os valores a serem mostrados
+na coluna cujo o nome foi passado como par‚metro.
 
 =cut
 
@@ -499,15 +499,15 @@ na coluna cujo o nome foi passado como par√¢metro.
 
 =head4 Recebe
 
-C<bridge> : C<obj> a ser chamado no evento de exporta√ß√£o de cache.
+C<bridge> : C<obj> a ser chamado no evento de exportaÁ„o de cache.
 
 =head4 Retorna
 
-C<obj> : Retorna o pr√≥prio objeto recebido
+C<obj> : Retorna o prÛprio objeto recebido
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-O m√©todo C<get_exported_filters> seta um objeto a ser chamado no caso de filtros serem exportados.
+O mÈtodo C<get_exported_filters> seta um objeto a ser chamado no caso de filtros serem exportados.
 
 =cut
 
@@ -533,9 +533,9 @@ C<void>
 
 C<inteiro> : Inteiro maior ou igual a zero.
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-O m√©todo C<length> retorna a quantidade de linhas do cache.
+O mÈtodo C<length> retorna a quantidade de linhas do cache.
 
 =cut
 
@@ -566,10 +566,10 @@ C<void>
          this.onStartPushing();
       }
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-O m√©todo C<push> insere uma ou mais linhas no cache. Recebe essas linhas como um C<hash>
-onde cada chave cont√©m o nome da coluna e cada valor o valor dessa coluna, ou um C<array> desses C<hash>es
+O mÈtodo C<push> insere uma ou mais linhas no cache. Recebe essas linhas como um C<hash>
+onde cada chave contÈm o nome da coluna e cada valor o valor dessa coluna, ou um C<array> desses C<hash>es
 
 =cut
 
@@ -613,11 +613,11 @@ C<void>
 
 =head4 Retorna
 
-C<do_it_again> : vari√°vel que cont√©m um booleano C<false> utilizado quando n√£o h√° mais nada no buffer.
+C<do_it_again> : vari·vel que contÈm um booleano C<false> utilizado quando n„o h· mais nada no buffer.
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
-O m√©todo C<push_thread> fica executando enquanto h√° informa√ß√£o no buffer e retira-a do buffer e a joga nas linhas 
+O mÈtodo C<push_thread> fica executando enquanto h· informaÁ„o no buffer e retira-a do buffer e a joga nas linhas 
 das tabelas.
 
 =cut
@@ -656,7 +656,7 @@ C<line> : recebe as linhas do cache
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
 Insere as linhas nas tabelas.
 
@@ -683,7 +683,7 @@ C<line> : recebe as linhas do cache
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
 conta a quantidade de valores em cada coluna.
 
@@ -729,7 +729,7 @@ C<line> : recebe as linhas do cache
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
 exporta os filtros para o bridge.
 
@@ -767,7 +767,7 @@ C<void>
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
 Refaz as linhas.
 
@@ -793,7 +793,7 @@ C<callback>
 
 C<void>
 
-=head4 Descri√ß√£o
+=head4 DescriÁ„o
 
 Volta uma linha
 
