@@ -599,12 +599,12 @@ C<void>
 
 =head4 Retorna
 
-C<do_it_again> : variável que contém um booleano C<false> utilizado quando não há mais nada no buffer.
+C<bool> : indica se continuará a excecução.
 
 =head4 Descrição
 
-O método C<push_thread> fica executando enquanto há informação no buffer e retira-a do buffer e a joga nas linhas 
-das tabelas.
+O método C<push_thread> fica executando enquanto há informação no buffer e retira-a do buffer transformando as linhas 
+em tabelas.
 
 =cut
 
@@ -755,7 +755,7 @@ C<void>
 
 =head4 Descrição
 
-Método utilizado para reconstruir uma linha quando solicitado.
+Move o ponteiro da linha atual do cache para a linha anterior.
 
 =cut
 
@@ -773,7 +773,7 @@ Método utilizado para reconstruir uma linha quando solicitado.
 
 =head4 Recebe
 
-C<callback>
+C<callback> : C<function> anônima
 
 =head4 Retorna
 
@@ -781,13 +781,11 @@ C<void>
 
 =head4 Descrição
 
-Sincroniza a posição de linhas do cache, utilizando uma comparação de posições com os dados do filtro que é um uma 
-C<string> via Json, envia para o C<hash> e disponibiliza com o C<callback> com o método C<wait_for_line>.
+O método C<when_line> é assíncrono. Quando a linha está disponível no cache seu C<callback> é chamado tendo a linha como parâmetro.
 
 =cut
 
-**/  
-   
+**/ 
    
    when_line: function(callback) {
       this.wait_for_line(this.current_line++, callback);
@@ -871,15 +869,38 @@ C<void>
 
 =head4 Descrição
 
-
+Escreve o log no console utilizando o buffer.
 
 =cut
 
 **/   
    
    log_buffer: function(){
-      //window.console.log(this.buffer);
+      window.console.log(this.buffer);
    },
+
+/**
+
+=pod
+
+=head3  log_buffer()
+
+=head4 Recebe
+
+C<>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Escreve o log do buffer para uma C<alert>.
+
+=cut
+
+**/
+
    alert_buffer: function() {
       alert(this.buffer.join("\n"));
    }
@@ -889,11 +910,28 @@ C<void>
 
 =pod
 
-=head2 SortLine
+=head2 SortLine()
+
+Representa uma linha da tabela.
+
+=head3 CacheOfCaches()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+
 
 =cut
 
 **/
+
 
 function SortLine() {
    if(SortLine.id == null)
@@ -905,6 +943,8 @@ SortLine.prototype = {
    get_data: function() {
       return this.data;
    },
+
+
    set_data: function(data) {
       this.data = data;
    },
@@ -935,6 +975,22 @@ SortLine.prototype = {
 =pod
 
 =head2 CacheOfCaches
+
+
+
+=head3 CacheOfCaches()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+
 
 =cut
 
@@ -1197,4 +1253,3 @@ CacheOfCaches.prototype = {
       });
    }
 };
-//
