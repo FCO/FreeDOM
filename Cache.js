@@ -433,7 +433,7 @@ C<void>
 
 =head4 Retorna
 
-C<Cache Object> : Um novo obj da classe Cache
+C<Cache Object> : Um novo objeto da classe Cache
 
 =head4 Descrição
 
