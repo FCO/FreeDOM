@@ -645,9 +645,14 @@ onde cada chave contém o nome da coluna e cada valor o valor dessa coluna, ou um
       }
       if(this.push_thread_id == null) {
          var _this = this;
+         
+         setTimeout(function(){
+            _this.push_thread();
+         }, 0);
+
          this.push_thread_id = setInterval(function(){
             if(_this.buffer.length > 0) {
-               _this.push_thread();
+         //      _this.push_thread();
             } else {
                clearInterval(_this.push_thread_id);
                _this.push_thread_id = null;
@@ -683,21 +688,59 @@ das tabelas.
 **/
    
    push_thread: function() {
-      //window.console.log("pushpush_thread()");
-      var line = this.buffer.shift();
-      var do_it_again = false;
-      if(line != null) {
-         var line_obj
-         if(line.get_data != null)
-            line_obj = line;
-         else {
-            line_obj = new SortLine();
-            line_obj.set_data(line);
-         }
-         this.insert(line_obj);
-         do_it_again = true;
+      if(this.buffer.length > 0) {
+         var _this = this;
+         setTimeout(function(){
+            _this.push_thread();
+         });
       }
-      return do_it_again;
+
+      while(this.buffer.length > 0) {
+         var line = this.buffer.shift();
+         if(line != null) {
+            var line_obj
+            if(line.get_data != null)
+               line_obj = line;
+            else {
+               line_obj = new SortLine();
+               line_obj.set_data(line);
+            }
+            this.insert(line_obj);
+            do_it_again = true;
+         } else {
+            return false;
+         }
+      }
+
+      //if(this.number_of_threads == null) this.number_of_threads = 0;
+      //this.number_of_threads++;
+      //window.console.log("pushpush_thread()");
+      //var do_it_again = false;
+      //if(this.buffer.length > 500) {
+      //   var _this = this;
+      //   setTimeout(function(){
+      //      _this.push_thread();
+      //   }, 0);
+      //}
+      //for(var i = 0; i < 200; i++) {
+      //   var line = this.buffer.shift();
+      //   if(line != null) {
+      //      var line_obj
+      //      if(line.get_data != null)
+      //         line_obj = line;
+      //      else {
+      //         line_obj = new SortLine();
+      //         line_obj.set_data(line);
+      //      }
+      //      this.insert(line_obj);
+      //      do_it_again = true;
+      //   } else {
+      //      this.number_of_threads--;
+      //      return false;
+      //   }
+      //}
+      //this.number_of_threads--
+      //return do_it_again;
    },
    
 /**
