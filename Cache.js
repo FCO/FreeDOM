@@ -986,7 +986,7 @@ Gera um log do buffer via caixa de texto(alert)
 
 =head2 SortLine
 
-A classe C<SortLine> é responsável pela ordenação de linhas no cache.
+A classe C<SortLine> representa uma linha.
 
 =head3 SortLine()
 
@@ -1027,7 +1027,7 @@ SortLine.prototype = {
 
 =head4 Recebe
 
-C<data> :
+C<data> : dados de uma linha
 
 =head4 Retorna
 
@@ -1035,7 +1035,7 @@ C<void>
 
 =head4 Descrição
 
-método que preenche uma linha com dados.
+método que popula uma linha com dados.
 
 =cut
 
@@ -1088,6 +1088,7 @@ C<tmp>
 
 =head4 Descrição
 
+método que recebe o conteúdo de uma coluna na linha.
 
 =cut
 
@@ -1119,7 +1120,7 @@ C<tmp>
 
 =head4 Descrição
 
-
+Método que coloca uma C<key> diferente para cada coluna na linha. (Obs: precisa ser verificada)
 
 =cut
 
@@ -1139,6 +1140,20 @@ C<tmp>
 =pod
 
 =head2 CacheOfCaches
+
+C<>
+
+=head3 CacheOfCaches()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+C<void> : 
+
+=head4 Descrição
 
 =cut
 
