@@ -1141,7 +1141,7 @@ Método que coloca uma C<key> diferente para cada coluna na linha. (Obs: precisa 
 
 =head2 CacheOfCaches
 
-C<>
+Classe que representa um conjunto de caches separados por colunas
 
 =head3 CacheOfCaches()
 
