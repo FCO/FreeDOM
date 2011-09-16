@@ -6,6 +6,70 @@
 
 Cache.js
 
+=head1 SAMPLE
+
+  <html>
+    <head>
+      <script src="./Cache.js"></script>
+      <script>
+        function get_table() {
+          return document.getElementById("sortable");
+        }
+        function my_load(){
+          var sortabletable = new SortTable();
+          var my_table      = get_table();
+          sortabletable.transform2sortable(my_table);
+          my_table.draw_loop();
+          my_table.set_lines_per_page(10);
+          my_table.onChangePage = function(page_num){
+            document.getElementById("page_num").innerHTML = page_num;
+          };
+        }
+        function populate() {
+          var my_table = get_table();
+          for(var i = 0; i < 100; i++) {
+            for(var j = 0; j < 100; j++) {
+               var tmp_line = {};
+               tmp_line.col0 = i + " - " + j;
+               tmp_line.col1 = Math.floor(Math.random() * 100);
+               tmp_line.col2 = Math.floor(Math.random() * 100);
+               tmp_line.col3 = Math.floor(Math.random() * 100);
+               tmp_line.col4 = Math.floor(Math.random() * 100);
+               tmp_line.col5 = Math.floor(Math.random() * 100);
+               tmp_line.col6 = Math.floor(Math.random() * 100);
+               tmp_line.col7 = Math.floor(Math.random() * 100);
+               tmp_line.col8 = Math.floor(Math.random() * 100);
+               tmp_line.col9 = Math.floor(Math.random() * 100);
+               my_table.push(tmp_line);
+            }
+          }
+        }
+        function filter(filter) {
+          var my_table = get_table();
+          my_table.set_filter(filter);
+        }
+      </script>
+    </head>
+    <body onload="my_load(); populate();">
+      <table id="sortable" border=1></table>
+      <a onclick="get_table().prev_page()">Prev Page</a>
+      | [
+      <span id="page_num"></span>
+      ] |
+      <a onclick="get_table().next_page()">Next Page</a>
+      <br />
+      <br />
+      <br />
+      <input type="text" name="filter" id="input_filter">
+      <br />
+      Escreva seu filtro (por exemplo: {"col0": ["0 - 0", "0 - 1", "9 - 0", "9 - 1"]})
+      <br />
+      <button onclick="filter(JSON.parse( document.getElementById('input_filter').value))">
+      OK
+      </button>
+    </body>
+  </html>
+
 =head1 API Externa
 
 Aqui serão descritas as classes contidas nesse arquivo
@@ -362,26 +426,28 @@ SortTable.prototype.transform2sortable = function(table) {
    table.next_page = function() {
       if(this.get_cache().lines.length / this.lines_per_page > this.page + 1) this.goto_page(this.page + 1);
    };
+   table.gotoPage = function(page) {
+      return this.goto_page(page - 1);
+   };
    table.goto_page = function(page) {
       this.page = page;
       var page_data = this.get_cache();
-      page_data.current_line = this.page * this.lines_per_page;
+      if(page_data != null)
+         page_data.current_line = this.page * this.lines_per_page;
       var lines = this.getElementsByTagName("tr");
       for(var h = 0; h < lines.length; h++){
-         //window.console.log("first line = " + page_data.current_line);
-         //lines[i].set_data(page_data.shift());
          var _this = this;
          var actual_line = lines[h];
-//window.console.log("H: " + h);
-         page_data.when_line(function(line){
-            if(line != null)
-               actual_line.set_data(line.get_values(_this.columns));
-            else {
-               var empty = [];
-               for(var j = 0; j < _this.columns.length; j++) empty.push("");
-               actual_line.set_data(empty);
-            }
-         });
+         if(page_data != null)
+            page_data.when_line(function(line){
+               if(line != null)
+                  actual_line.set_data(line.get_values(_this.columns));
+               else {
+                  var empty = [];
+                  for(var j = 0; j < _this.columns.length; j++) empty.push("");
+                  actual_line.set_data(empty);
+               }
+            });
       }
    };
    table.push = function(data) {
@@ -390,7 +456,10 @@ SortTable.prototype.transform2sortable = function(table) {
       //this.sortCache.push(data);
       if(this.columns.length <= 0 || (this.columns.length == 1 && this.columns[0] == "")) {
          var columns_proto = [];
-         for(var key in data) {
+         var obj = data;
+         if(data.length != null)
+            obj = data[0];
+         for(var key in obj) {
             columns_proto.push(key);
          }
          this.set_columns(columns_proto);
@@ -562,9 +631,12 @@ onde cada chave contém o nome da coluna e cada valor o valor dessa coluna, ou um
 **/
 
    push: function(data){
-      if(this.onStartPushing != null && typeof(this.onStartPushing) == typeof(function(){})) {
-         this.onStartPushing();
-      }
+      var _this = this;
+      setTimeout(function(){
+         if(_this.onStartPushing != null && typeof(_this.onStartPushing) == typeof(function(){})) {
+            _this.onStartPushing();
+         }
+      }, 0);
       if(typeof(data) == typeof({}) && data.length == null) {
          this.buffer.push(data);
       } else {
@@ -651,7 +723,8 @@ Insere a linha recebida no cashe.
 **/
 
    insert: function(line){
-      this.filter_process(line);
+      var _this = this;
+      setTimeout(function(){_this.filter_process(line)}, 0);
       this.lines.push(line);
    },
    
@@ -991,8 +1064,8 @@ CacheOfCaches.prototype = {
             list.push(this._get_filter(filter))
          }
          //window.console.log(list);
-         window.console.log(filters[key].length);
-         window.console.log(this._get_filter({}).get_filter_options(key).length / 2);
+         //window.console.log(filters[key].length);
+         //window.console.log(this._get_filter({}).get_filter_options(key).length / 2);
          //window.console.log(this._get_filter({}).get_filter_options(key).length / 2);
          if(filters[key].length > this._get_filter({}).get_filter_options(key).length / 2) {
          //if(filters[key].length > this._get_filter({}).get_filter_options(key).length / 2) {
@@ -1013,21 +1086,23 @@ CacheOfCaches.prototype = {
       //window.console.log(JSON.stringify(filters));
       this.filters[JSON.stringify(filters)] = ret;
       var _this = this;
-      ret.onStartPushing = function() {
-         if(_this.table.onStartPushing != null && typeof(_this.table.onStartPushing) == typeof(function(){})) {
-            _this.table.onStartPushing();
-            _this.push_num++;
-         }
-      };
-      ret.onStopPushing = function() {
-         if(_this.table.onStopPushing != null && typeof(_this.table.onStopPushing) == typeof(function(){})) {
-            _this.push_num--;
-            if(_this.push_num == 0) {
-               _this.table.onStopPushing();
-            }
-         }
-      };
-      ret.filter_name = filters;
+      if(ret != null) {
+          ret.onStartPushing = function() {
+             if(_this.table.onStartPushing != null && typeof(_this.table.onStartPushing) == typeof(function(){})) {
+                _this.table.onStartPushing();
+                _this.push_num++;
+             }
+          };
+          ret.onStopPushing = function() {
+             if(_this.table.onStopPushing != null && typeof(_this.table.onStopPushing) == typeof(function(){})) {
+                _this.push_num--;
+                if(_this.push_num == 0) {
+                   _this.table.onStopPushing();
+                }
+             }
+          };
+          ret.filter_name = filters;
+      }
       return ret;
    },
 

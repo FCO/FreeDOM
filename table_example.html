@@ -14,10 +14,18 @@
         my_table.onChangePage = function(page_num){
           document.getElementById("page_num").innerHTML = page_num;
         };
+        var buf = document.getElementById("buffer");
+        var lin = document.getElementById("lines");
+
+        setInterval(function(){
+          buf.innerHTML = my_table.get_cache().buffer.length;
+          lin.innerHTML = my_table.get_cache().lines.length;
+        }, 100);
       }
       function populate() {
         var my_table = get_table();
         for(var i = 0; i < 100; i++) {
+          var arr = [];
           for(var j = 0; j < 100; j++) {
              var tmp_line = {};
              tmp_line.col0 = i + " - " + j;
@@ -30,17 +38,54 @@
              tmp_line.col7 = Math.floor(Math.random() * 100);
              tmp_line.col8 = Math.floor(Math.random() * 100);
              tmp_line.col9 = Math.floor(Math.random() * 100);
-             my_table.push(tmp_line);
+             arr.push(tmp_line);
           }
+          my_table.push(arr);
         }
       }
       function filter(filter) {
         var my_table = get_table();
         my_table.set_filter(filter);
       }
+      var called = 0;
+      function add_lines(lines) {
+         window.console.log("add_lines(" + lines + ")");
+         var i = called++;
+         var my_table = get_table();
+         var arr = [];
+         for(var j = 0; j < lines; j++) {
+            var tmp_line = {};
+            tmp_line.col0 = i + " - " + j;
+            tmp_line.col1 = Math.floor(Math.random() * 100);
+            tmp_line.col2 = Math.floor(Math.random() * 100);
+            tmp_line.col3 = Math.floor(Math.random() * 100);
+            tmp_line.col4 = Math.floor(Math.random() * 100);
+            tmp_line.col5 = Math.floor(Math.random() * 100);
+            tmp_line.col6 = Math.floor(Math.random() * 100);
+            tmp_line.col7 = Math.floor(Math.random() * 100);
+            tmp_line.col8 = Math.floor(Math.random() * 100);
+            tmp_line.col9 = Math.floor(Math.random() * 100);
+            arr.push(tmp_line);
+         }
+         my_table.push(arr);
+      }
     </script>
   </head>
-  <body onload="my_load(); populate();">
+  <body onload="my_load();">
+  <!--<body onload="my_load(); populate();">-->
+    Buffer: <span id="buffer"></span>
+    <br />
+    Lines : <span id="lines"></span>
+    <br />
+    <br />
+    Criar linhas:
+    <button onclick="add_lines(1)">1</button>
+    <button onclick="add_lines(10)">10</button>
+    <button onclick="add_lines(100)">100</button>
+    <button onclick="add_lines(1000)">1000</button>
+    <button onclick="add_lines(10000)">10000</button>
+    <br />
+    <br />
     <table id="sortable" border=1></table>
     <a onclick="get_table().prev_page()">Prev Page</a>
     | [
