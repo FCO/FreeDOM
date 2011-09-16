@@ -854,8 +854,7 @@ C<void>
 
 =head4 Descrição
 
-Sincroniza a posição de linhas do cache, utilizando uma comparação de posições com os dados do filtro que é um uma 
-C<string> via Json, envia para o C<hash> e disponibiliza com o C<callback> com o método C<wait_for_line>.
+Método assíncrono que muda a posição do ponteiro do cache de acordo com a linha selecionada.
 
 =cut
 
@@ -874,7 +873,7 @@ C<string> via Json, envia para o C<hash> e disponibiliza com o C<callback> com o
 
 =head4 Recebe
 
-C<line_num, callback> : Recebe o número da linha com o line_num e linha com o callback
+C<line_num, callback> : Recebe o número da linha com o line_num
 
 =head4 Retorna
 
@@ -882,7 +881,7 @@ C<void>
 
 =head4 Descrição
 
-ele atua sincronizando a linha pelo seu número. É utilizado pelo método C<when_line>
+Método que aguarda alguma linha vinda do buffer.
 
 =cut
 
@@ -906,11 +905,11 @@ ele atua sincronizando a linha pelo seu número. É utilizado pelo método C<when_l
 
 =pod
 
-=head3  wait_for_line(C<line_num, callback>)
+=head3  reset()
 
 =head4 Recebe
 
-C<callback>
+C<void>
 
 =head4 Retorna
 
@@ -918,7 +917,7 @@ C<void>
 
 =head4 Descrição
 
-Volta uma linha
+move a posição do ponteiro do cache para 0.
 
 =cut
 
@@ -944,7 +943,7 @@ C<void>
 
 =head4 Descrição
 
-
+Gera um log do buffer via console
 
 =cut
 
@@ -953,6 +952,29 @@ C<void>
    log_buffer: function(){
       //window.console.log(this.buffer);
    },
+   
+/**
+
+=pod
+
+=head3  alert_buffer()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Gera um log do buffer via caixa de texto(alert)
+
+=cut
+
+**/   
+   
    alert_buffer: function() {
       alert(this.buffer.join("\n"));
    }
@@ -964,6 +986,22 @@ C<void>
 
 =head2 SortLine
 
+A classe C<SortLine> é responsável pela ordenação de linhas no cache.
+
+=head3 SortLine()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+C<void> : 
+
+=head4 Descrição
+
+O método SortLine() é o construtor.
+
 =cut
 
 **/
@@ -974,17 +1012,87 @@ function SortLine() {
    this.id = SortLine.id++;
 }
 
+   
+
 SortLine.prototype = {
    get_data: function() {
       return this.data;
    },
+
+/**
+
+=pod
+
+=head3  set_data(data)
+
+=head4 Recebe
+
+C<data> :
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+método que preenche uma linha com dados.
+
+=cut
+
+**/
+
    set_data: function(data) {
       this.data = data;
    },
+   
+/**
+
+=pod
+
+=head3  get_column(column)
+
+=head4 Recebe
+
+C<column> : recebe o nome de uma coluna
+
+=head4 Retorna
+
+C<column> : 
+
+=head4 Descrição
+
+método que recebe o nome de uma coluna na linha.
+
+=cut
+
+**/
+
    get_column: function(column) {
       //window.console.log("get_column(" + column + ") == " + this.data[column]);
       return this.data[column];
    },
+   
+/**
+
+=pod
+
+=head3  get_values(columns)
+
+=head4 Recebe
+
+C<column> : recebe colunas 
+
+=head4 Retorna
+
+C<tmp>
+
+=head4 Descrição
+
+
+=cut
+
+**/
+
    get_values: function(columns) {
       var tmp = [];
       for(var i = 0; i < columns.length; i++) {
@@ -994,6 +1102,29 @@ SortLine.prototype = {
       }
       return tmp;
    },
+   
+/**
+
+=pod
+
+=head3  all_columns()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+C<tmp>
+
+=head4 Descrição
+
+
+
+=cut
+
+**/  
+  
    all_columns: function() {
       var tmp = [];
       for(var key in this.data) {
