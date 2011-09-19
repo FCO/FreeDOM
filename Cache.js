@@ -1,6 +1,6 @@
 /**
 
-=pod
+epod
 
 =head1 NAME
 
@@ -646,13 +646,9 @@ onde cada chave contém o nome da coluna e cada valor o valor dessa coluna, ou um
       if(this.push_thread_id == null) {
          var _this = this;
          
-         setTimeout(function(){
-            _this.push_thread();
-         }, 0);
-
          this.push_thread_id = setInterval(function(){
             if(_this.buffer.length > 0) {
-         //      _this.push_thread();
+               _this.push_thread();
             } else {
                clearInterval(_this.push_thread_id);
                _this.push_thread_id = null;
@@ -660,7 +656,7 @@ onde cada chave contém o nome da coluna e cada valor o valor dessa coluna, ou um
                  _this.onStopPushing();
               }
             }
-         }, 0);
+         }, 1);
       }
    },
 
@@ -688,59 +684,30 @@ das tabelas.
 **/
    
    push_thread: function() {
-      if(this.buffer.length > 0) {
-         var _this = this;
-         setTimeout(function(){
-            _this.push_thread();
-         });
-      }
-
-      while(this.buffer.length > 0) {
-         var line = this.buffer.shift();
-         if(line != null) {
-            var line_obj
-            if(line.get_data != null)
-               line_obj = line;
-            else {
-               line_obj = new SortLine();
-               line_obj.set_data(line);
+      //window.console.log("push_thread()");
+      var start = (new Date()).getTime();
+      while(this.buffer.length > 0){
+         for(var i = 0; i < 50 && this.buffer.length > 0; i++) {
+            var line = this.buffer.shift();
+            if(line != null) {
+               var line_obj
+               if(line.get_data != null)
+                  line_obj = line;
+               else {
+                  line_obj = new SortLine();
+                  line_obj.set_data(line);
+               }
+               var _this = this;
+               this.insert(line_obj);
             }
-            this.insert(line_obj);
-            do_it_again = true;
-         } else {
-            return false;
+         }
+         if((new Date()).getTime() >= start + 50) {
+            //window.console.log("Saindo: " + (now - start));
+            return;
          }
       }
-
-      //if(this.number_of_threads == null) this.number_of_threads = 0;
-      //this.number_of_threads++;
-      //window.console.log("pushpush_thread()");
-      //var do_it_again = false;
-      //if(this.buffer.length > 500) {
-      //   var _this = this;
-      //   setTimeout(function(){
-      //      _this.push_thread();
-      //   }, 0);
-      //}
-      //for(var i = 0; i < 200; i++) {
-      //   var line = this.buffer.shift();
-      //   if(line != null) {
-      //      var line_obj
-      //      if(line.get_data != null)
-      //         line_obj = line;
-      //      else {
-      //         line_obj = new SortLine();
-      //         line_obj.set_data(line);
-      //      }
-      //      this.insert(line_obj);
-      //      do_it_again = true;
-      //   } else {
-      //      this.number_of_threads--;
-      //      return false;
-      //   }
-      //}
-      //this.number_of_threads--
-      //return do_it_again;
+      //window.console.log("Matando thread");
+      //this.push_thread_id = null;
    },
    
 /**
@@ -859,7 +826,7 @@ exporta os filtros para o bridge.
 
 =pod
 
-=head3  redo()
+=head3 redo()
 
 =head4 Recebe
 
@@ -912,7 +879,7 @@ Método assíncrono que muda a posição do ponteiro do cache de acordo com a linha 
 
 =pod
 
-=head3  wait_for_line(C<line_num, callback>)
+=head3 wait_for_line(C<line_num, callback>)
 
 =head4 Recebe
 
@@ -948,7 +915,7 @@ Método que aguarda alguma linha vinda do buffer.
 
 =pod
 
-=head3  reset()
+=head3 reset()
 
 =head4 Recebe
 
@@ -974,7 +941,7 @@ move a posição do ponteiro do cache para 0.
 
 =pod
 
-=head3  log_buffer()
+=head3 log_buffer()
 
 =head4 Recebe
 
@@ -1000,7 +967,7 @@ Gera um log do buffer via console
 
 =pod
 
-=head3  alert_buffer()
+=head3 alert_buffer()
 
 =head4 Recebe
 
@@ -1066,7 +1033,7 @@ SortLine.prototype = {
 
 =pod
 
-=head3  set_data(data)
+=head3 set_data(data)
 
 =head4 Recebe
 
@@ -1092,7 +1059,7 @@ método que popula uma linha com dados.
 
 =pod
 
-=head3  get_column(column)
+=head3 get_column(column)
 
 =head4 Recebe
 
@@ -1119,7 +1086,7 @@ método que recebe o nome de uma coluna na linha.
 
 =pod
 
-=head3  get_values(columns)
+=head3 get_values(columns)
 
 =head4 Recebe
 
@@ -1131,7 +1098,7 @@ C<tmp>
 
 =head4 Descrição
 
-método que recebe o conteúdo de uma coluna na linha.
+método que retorna o conteúdo da linha.
 
 =cut
 
@@ -1151,7 +1118,7 @@ método que recebe o conteúdo de uma coluna na linha.
 
 =pod
 
-=head3  all_columns()
+=head3 all_columns()
 
 =head4 Recebe
 
@@ -1159,11 +1126,11 @@ C<void>
 
 =head4 Retorna
 
-C<tmp>
+C<array> : Nome das colunas
 
 =head4 Descrição
 
-Método que coloca uma C<key> diferente para cada coluna na linha. (Obs: precisa ser verificada)
+Método que retorna o nome de todas as colunas existentes naquela linha
 
 =cut
 
@@ -1184,7 +1151,7 @@ Método que coloca uma C<key> diferente para cada coluna na linha. (Obs: precisa 
 
 =head2 CacheOfCaches
 
-Classe que representa um conjunto de caches separados por colunas
+Classe que representa um conjunto de caches.
 
 =head3 CacheOfCaches()
 
@@ -1194,9 +1161,11 @@ C<void>
 
 =head4 Retorna
 
-C<void> : 
+C<CacheOfCaches obj> : objeto de CacheOfCaches
 
 =head4 Descrição
+
+Esse é o construtor da classe
 
 =cut
 
@@ -1252,13 +1221,7 @@ CacheOfCaches.prototype = {
             filter[key].push(filters[key][i]);
             list.push(this._get_filter(filter))
          }
-         //window.console.log(list);
-         //window.console.log(filters[key].length);
-         //window.console.log(this._get_filter({}).get_filter_options(key).length / 2);
-         //window.console.log(this._get_filter({}).get_filter_options(key).length / 2);
          if(filters[key].length > this._get_filter({}).get_filter_options(key).length / 2) {
-         //if(filters[key].length > this._get_filter({}).get_filter_options(key).length / 2) {
-            //window.console.log("subtracao");
             var not = this.array_subtract(this._get_filter({}).get_filter_options(key), filters[key]);
             var fil = [];
             for(var k = 0; k < not.length; k++) {
@@ -1272,7 +1235,6 @@ CacheOfCaches.prototype = {
          }
       }
       var ret = this.intersection(values);
-      //window.console.log(JSON.stringify(filters));
       this.filters[JSON.stringify(filters)] = ret;
       var _this = this;
       if(ret != null) {
@@ -1309,7 +1271,6 @@ CacheOfCaches.prototype = {
    },
 
    union: function(arr_cache){
-      //window.console.log("unindo: " + arr_cache);
       if(arr_cache.length < 1) return;
       var tmp1 = arr_cache.shift();
       var tmp2;
@@ -1336,29 +1297,21 @@ CacheOfCaches.prototype = {
    _union: function (obj, cache1, cache2){
       var _this = this;
       cache1.when_line(function(line1){
-         //window.console.log("Chegou linha do cache1: " + line1.id);
          cache2.when_line(function(line2){
-            //window.console.log("Chegou linha do cache2: " + line2.id);
-            //window.console.log("union  => " + (line1 != null ? line1.id : "null") + " --- " + (line2 != null ? line2.id : "null"));
             if(line1 == line2 && line1 == null) {
                obj.processing = false;
                return;
             } else if(line1 == null) {
-               //obj.put_on_index(line2, index);
                obj.push(line2)
             } else if(line2 == null) {
-               //obj.put_on_index(line2, index);
                obj.push(line1)
             } else if(line1.id == line2.id) {
-               //obj.put_on_index(line2, index);
                obj.push(line1);
             } else if(line1.id < line2.id) {
                cache2.redo();
-               //obj.put_on_index(line1, index);
                obj.push(line1);
             } else if(line1.id > line2.id) {
                cache1.redo();
-               //obj.put_on_index(line2, index);
                obj.push(line2)
             }
             setTimeout(function(){_this._union(obj, cache1, cache2)}, 0);
@@ -1367,7 +1320,6 @@ CacheOfCaches.prototype = {
    },
 
    intersection: function(arr_cache){
-      //window.console.log("intercedendo: " + arr_cache);
       if(arr_cache.length < 1) return;
       var tmp1 = arr_cache.shift();
       var tmp2;
@@ -1395,12 +1347,10 @@ CacheOfCaches.prototype = {
       var _this = this;
       cache1.when_line(function(line1){
          cache2.when_line(function(line2){
-            //window.console.log("intersection  => " + (line1 != null ? line1.id : "null") + " --- " + (line2 != null ? line2.id : "null"));
             if(line2 == null || line1 == null) {
                obj.processing = false;
                return;
             } else if(line1.id == line2.id)
-               //obj.put_on_index(line1, index);
                obj.push(line1);
             else if(line1.id < line2.id) {
                cache2.redo();
@@ -1413,17 +1363,6 @@ CacheOfCaches.prototype = {
    },
 
    subtract: function(tmp1, tmp2){
-      //window.console.log("subtraindo: " + arr_cache);
-      //if(arr_cache.length < 1) return;
-      //var tmp1 = arr_cache.shift();
-      //var tmp2;
-      //if(arr_cache.length < 1)
-      //   return tmp1;
-      //else if(arr_cache.length > 1) {
-      //   tmp2 = this.subtract(arr_cache);
-      //} else {
-      //   tmp2 = arr_cache.shift();
-      //}
       return this.return_subtract(tmp1, tmp2);
    },
 
@@ -1441,16 +1380,13 @@ CacheOfCaches.prototype = {
       var _this = this;
       cache1.when_line(function(line1){
          cache2.when_line(function(line2){
-            //window.console.log("subtract  => " + (line1 != null ? line1.id : "null") + " --- " + (line2 != null ? line2.id : "null"));
             if(line1 == null) {
                obj.processing = false;
                return;
             } else if(line2 == null){
-               //obj.put_on_index(line1, index);
                obj.push(line1);
             } else if(line1.id == line2.id){
             } else if(line1.id < line2.id) {
-               //obj.put_on_index(line1, index);
                obj.push(line1);
                cache2.redo();
             } else if(line1.id > line2.id) {
@@ -1461,4 +1397,3 @@ CacheOfCaches.prototype = {
       });
    }
 };
-//

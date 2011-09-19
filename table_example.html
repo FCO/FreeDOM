@@ -16,10 +16,12 @@
         };
         var buf = document.getElementById("buffer");
         var lin = document.getElementById("lines");
+        var thr = document.getElementById("threads");
 
         setInterval(function(){
           buf.innerHTML = my_table.get_cache().buffer.length;
           lin.innerHTML = my_table.get_cache().lines.length;
+          thr.innerHTML = my_table.get_cache().number_of_threads;
         }, 100);
       }
       function populate() {
@@ -76,6 +78,9 @@
     Buffer: <span id="buffer"></span>
     <br />
     Lines : <span id="lines"></span>
+    <br />
+    <br />
+    Threads : <span id="threads"></span>
     <br />
     <br />
     Criar linhas:
