@@ -1,3 +1,31 @@
+/**
+
+=pod
+
+=head1 NAME
+
+Cache.js
+
+=head1 SAMPLE
+
+=head1 Classes Internas
+
+Aqui serão descritas as classes contidas nesse arquivo
+
+=head2 SubtractionCache
+
+=head3 Descrição
+
+=head4 Recebe
+
+=head4 Retorna
+
+=head4 Descrição
+
+
+=cut
+*/
+
 function SubtractionCache() {
    this.cache = {};
 }
@@ -21,6 +49,24 @@ SubtractionCache.prototype = {
       this.cache[this.stringify(arr1, arr2)] = resp;
    }
 };
+
+/**
+
+=pod
+
+=head2 FilterPath
+
+=head3 Descrição
+
+=head4 Recebe
+
+=head4 Retorna
+
+=head4 Descrição
+
+
+=cut
+**/
 
 function FilterPath() {
    this.array = [];
@@ -129,6 +175,28 @@ FilterPath.prototype = {
    }
 };
 
+/**
+
+=pod
+
+=head2 clone
+
+=head3 Descrição
+
+=head4 Recebe
+
+C<array>
+
+=head4 Retorna
+
+C<array>
+
+=head4 Descrição
+
+=cut
+
+**/
+
 function clone(arr){
    var tmp = [];
    for(var i = 0; i < arr.length; i++)
@@ -163,7 +231,27 @@ function subtract_array(arr1, arr2) {
    return ret
 }
 
+/**
 
+=pod
+
+=head2 FilterNode
+
+=head3 Descrição
+
+=head4 Recebe
+
+C<array>
+
+=head4 Retorna
+
+C<array>
+
+=head4 Descrição
+
+=cut
+
+**/
 
 function FilterNode() {
    if(FilterNode.id == null)
