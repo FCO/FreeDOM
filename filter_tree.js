@@ -1,30 +1,211 @@
+/**
+
+=pod
+
+=head1 NAME
+
+Cache.js
+
+=head1 SAMPLE
+
+=head1 Classes Internas
+
+Aqui serão descritas as classes contidas nesse arquivo
+
+**/
+
+/**
+
+
+=head2 SubtractionCache
+
+=head3 Descrição
+
+Classe responsável por subratrair caches.
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+=head4 Descrição
+
+=cut
+*/
+
 function SubtractionCache() {
    this.cache = {};
 }
+
+/**
+
+=pod
+
+=head3 get_instance()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+C<object>
+
+=head4 Descrição
+
+Método que verifica se a instância de SubractionCache é nula, caso seja cria uma nova instância.
+
+=cut
+
+**/  
+
 SubtractionCache.get_instance = function() {
    if(SubtractionCache.instance == null)
       SubtractionCache.instance = new SubtractionCache();
    return SubtractionCache.instance;
 }
+
+
+
 SubtractionCache.prototype = {
    stringify: function(arr1, arr2) {
       return arr1.join("::") + "-" + arr2.join("::");
    },
+
+/**
+
+=pod
+
+=head3 exists(C<arr1>,C<arr2>)
+
+=head4 Recebe
+
+C<array> : array de caches
+
+C<array> : array de caches
+
+=head4 Retorna
+
+C<boolean>
+
+=head4 Descrição
+
+Método que verifica se a instância de SubractionCache é nula, caso seja cria uma nova instância.
+
+=cut
+
+**/   
+   
    exists: function(arr1, arr2) {
       if(this.cache[this.stringify(arr1, arr2)] != null)
          return true;
    },
+   
+/**
+
+=pod
+
+=head3 get_cache(C<arr1>,C<arr2>)
+
+=head4 Recebe
+
+C<array> : array de caches
+
+C<array> : array de caches
+
+=head4 Retorna
+
+C<boolean>
+
+=head4 Descrição
+
+Método que verifica se a instância de SubractionCache é nula, caso seja cria uma nova instância.
+
+=cut
+
+**/   
+   
    get_cache: function(arr1, arr2) {
       return this.cache[this.stringify(arr1, arr2)];
    },
+
+/**
+
+=pod
+
+=head3 get_cache(C<arr1>,C<arr2>)
+
+=head4 Recebe
+
+C<array> : array de caches
+
+C<array> : array de caches
+
+=head4 Retorna
+
+C<boolean>
+
+=head4 Descrição
+
+Método que recebe dois arrays e seta o resultado.
+
+=cut
+
+**/      
+   
    set_cache: function(arr1, arr2, resp) {
       this.cache[this.stringify(arr1, arr2)] = resp;
    }
 };
 
+/**
+
+=pod
+
+=head2 FilterPath
+
+=head3 Descrição
+
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+
+
+=head4 Descrição
+
+
+=cut
+**/
+
 function FilterPath() {
    this.array = [];
 }
+
+/**
+
+=pod
+
+=head3 get_cache()
+
+=head4 Recebe
+
+C<>
+
+=head4 Retorna
+
+C<>
+
+=head4 Descrição
+
+
+=cut
+
+**/
 
 FilterPath.prototype = {
    constructor: "FilterPath",
@@ -129,6 +310,28 @@ FilterPath.prototype = {
    }
 };
 
+/**
+
+=pod
+
+=head2 clone
+
+=head3 Descrição
+
+=head4 Recebe
+
+C<array>
+
+=head4 Retorna
+
+C<array>
+
+=head4 Descrição
+
+=cut
+
+**/
+
 function clone(arr){
    var tmp = [];
    for(var i = 0; i < arr.length; i++)
@@ -163,7 +366,27 @@ function subtract_array(arr1, arr2) {
    return ret
 }
 
+/**
 
+=pod
+
+=head2 FilterNode
+
+=head3 Descrição
+
+=head4 Recebe
+
+C<array>
+
+=head4 Retorna
+
+C<array>
+
+=head4 Descrição
+
+=cut
+
+**/
 
 function FilterNode() {
    if(FilterNode.id == null)

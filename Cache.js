@@ -1,6 +1,6 @@
 /**
 
-epod
+=pod
 
 =head1 NAME
 
@@ -157,7 +157,7 @@ C<void>
 
 =head4 Retorna
 
-Um valor inteiro representando a página atual exibida pela tabela.
+C<inteiro> : Um valor inteiro(maior que zero) representando a página atual exibida pela tabela.
 
 =head4 Descrição
 
@@ -239,10 +239,13 @@ Cada chave é o nome de uma coluna e cada valor é um C<array> com os valores daqu
 
   {col1: ["valor1", "valor2"], col2: ["valor3", "valor4"]}
   
-  // filtrando a tabela pelas colunas "col1" e "col2",
-  // sendo que só mostrará linhas onde
-  // o valor da coluna "col1" seja "valor1" ou "valor2"
-  // e o valor da coluna "col2" seja "valor3" ou "valor4"
+  // filtrando a tabela pelas colunas "col1" e "col2", sendo que só mostrará linhas onde
+  // o valor da coluna "col1" seja "valor1" ou "valor2" e o valor da coluna "col2" seja 
+  // "valor3" ou "valor4"
+  
+  {} 
+  
+  //filtro vazio (retorna todas as linhas)
 
 =head3 when_filter_options(C<col>, C<callback>)
 
@@ -668,8 +671,11 @@ C<void>
 
 =head4 Descrição
 
-O método C<push> insere uma ou mais linhas no cache. Recebe essas linhas como um C<hash>
-onde cada chave contém o nome da coluna e cada valor o valor dessa coluna, ou um C<array> desses C<hash>es
+O método C<push> insere uma ou mais linhas no cache. Um C<hash> representa uma linha, onde cada chave contém o nome
+de uma coluna associada e cada valor representa o valor a ser inserido. Um C<array> de C<hash>, representa as várias linhas
+as serem inseridas. O push disponibiliza no buffer a(s) linha(s) que será(ão) inserida(s), além de invocar/conjurar o metodo que gera a C<thread>
+ C<push_thread()> caso este ainda não esteja ativo.
+
 
 =cut
 
@@ -716,9 +722,13 @@ onde cada chave contém o nome da coluna e cada valor o valor dessa coluna, ou um
       if(this.push_thread_id == null) {
          var _this = this;
          
+         setTimeout(function(){
+            _this.push_thread();
+         }, 0);
+
          this.push_thread_id = setInterval(function(){
             if(_this.buffer.length > 0) {
-               _this.push_thread();
+         //      _this.push_thread();
             } else {
                clearInterval(_this.push_thread_id);
                _this.push_thread_id = null;
@@ -726,7 +736,7 @@ onde cada chave contém o nome da coluna e cada valor o valor dessa coluna, ou um
                  _this.onStopPushing();
               }
             }
-         }, 1);
+         }, 0);
       }
    },
 
@@ -742,42 +752,71 @@ C<void>
 
 =head4 Retorna
 
-C<do_it_again> : variável que contém um booleano C<false> utilizado quando não há mais nada no buffer.
-
+C<void>
 =head4 Descrição
 
-O método C<push_thread> fica executando enquanto há informação no buffer e retira-a do buffer e a joga nas linhas 
-das tabelas.
+O método C<push_thread> gera uma C<thread> que é responsável por consumir o que for disponibilizado no buffer - enquanto houver 
+informação a ser consumida, efetuar as verificações necessárias e invocar/conjurar o método de inserção para cada linha a ser 
+inserida no cache.
 
 =cut
 
 **/
    
    push_thread: function() {
-      //window.console.log("push_thread()");
-      var start = (new Date()).getTime();
-      while(this.buffer.length > 0){
-         for(var i = 0; i < 50 && this.buffer.length > 0; i++) {
-            var line = this.buffer.shift();
-            if(line != null) {
-               var line_obj
-               if(line.get_data != null)
-                  line_obj = line;
-               else {
-                  line_obj = new SortLine();
-                  line_obj.set_data(line);
-               }
-               var _this = this;
-               this.insert(line_obj);
+      if(this.buffer.length > 0) {
+         var _this = this;
+         setTimeout(function(){
+            _this.push_thread();
+         });
+      }
+
+      while(this.buffer.length > 0) {
+         var line = this.buffer.shift();
+         if(line != null) {
+            var line_obj
+            if(line.get_data != null)
+               line_obj = line;
+            else {
+               line_obj = new SortLine();
+               line_obj.set_data(line);
             }
-         }
-         if((new Date()).getTime() >= start + 50) {
-            //window.console.log("Saindo: " + (now - start));
-            return;
+            this.insert(line_obj);
+            do_it_again = true;
+         } else {
+            return false;
          }
       }
-      //window.console.log("Matando thread");
-      //this.push_thread_id = null;
+
+      //if(this.number_of_threads == null) this.number_of_threads = 0;
+      //this.number_of_threads++;
+      //window.console.log("pushpush_thread()");
+      //var do_it_again = false;
+      //if(this.buffer.length > 500) {
+      //   var _this = this;
+      //   setTimeout(function(){
+      //      _this.push_thread();
+      //   }, 0);
+      //}
+      //for(var i = 0; i < 200; i++) {
+      //   var line = this.buffer.shift();
+      //   if(line != null) {
+      //      var line_obj
+      //      if(line.get_data != null)
+      //         line_obj = line;
+      //      else {
+      //         line_obj = new SortLine();
+      //         line_obj.set_data(line);
+      //      }
+      //      this.insert(line_obj);
+      //      do_it_again = true;
+      //   } else {
+      //      this.number_of_threads--;
+      //      return false;
+      //   }
+      //}
+      //this.number_of_threads--
+      //return do_it_again;
    },
    
 /**
@@ -797,6 +836,7 @@ C<void>
 =head4 Descrição
 
 Insere a linha recebida no cashe.
+Insere no cache cada linha para qual for chamado.
 
 =cut
 
@@ -824,7 +864,8 @@ C<void>
 
 =head4 Descrição
 
-conta a quantidade de valores em cada coluna.
+Invoca/conjura o método C<export_filter(line)> que irá popular os caches necessários além de contar a quantidade de ocorrência
+de valores em cada coluna do cache.
 
 =cut
 
@@ -837,7 +878,7 @@ conta a quantidade de valores em cada coluna.
          var col = line.all_columns()[i];
          if(this.options[col] == null)
             this.options[col] = {};
-         if(this.options[col][line.get_column(col)] == null)
+         if(this.options[col][line.get_column(col)] == null) //get_column = get_column_value
             this.options[col][line.get_column(col)] = 0;
          this.options[col][line.get_column(col)]++;
       }
@@ -870,7 +911,9 @@ C<void>
 
 =head4 Descrição
 
-exporta os filtros para o bridge.
+O método popula o cache C<coluna>-C<valor> (caso não exista, cria um cache adequado) com a linha recebida. A quantidade de 
+caches criados/populados será de acordo com a quantidade de colunas que a linha possuir. O par C<coluna>-C<valor>
+servirá como nomenclatura para filtro associado ao cache criado/populado.
 
 =cut
 
@@ -897,7 +940,7 @@ exporta os filtros para o bridge.
 
 =pod
 
-=head3 redo()
+=head3  redo()
 
 =head4 Recebe
 
@@ -909,7 +952,7 @@ C<void>
 
 =head4 Descrição
 
-Método utilizado para reconstruir uma linha quando solicitado.
+Método seta como corrente/atual a linha anteriormente (já processada) inserida no cache.
 
 =cut
 
@@ -935,7 +978,11 @@ C<void>
 
 =head4 Descrição
 
-Método assíncrono que muda a posição do ponteiro do cache de acordo com a linha selecionada.
+Método assíncrono que recebe uma função callback. A função callback será executada quando a linha atual estiver disponível.
+
+  cache.when_line(function (line){
+    alert(line)
+  });
 
 =cut
 
@@ -950,11 +997,13 @@ Método assíncrono que muda a posição do ponteiro do cache de acordo com a linha 
 
 =pod
 
-=head3 wait_for_line(C<line_num, callback>)
+=head3  wait_for_line(C<line_num>, callback>)
 
 =head4 Recebe
 
-C<line_num, callback> : Recebe o número da linha com o line_num
+C<line_num> : inteiro
+
+C<callback>: função a ser executada.
 
 =head4 Retorna
 
@@ -962,7 +1011,8 @@ C<void>
 
 =head4 Descrição
 
-Método que aguarda alguma linha vinda do buffer.
+Método assíncrono que recebe o número da linha a ser aguardada e uma função callback. A função callback será executada quando a 
+linha referente a C<line_num> estiver disponível.
 
 =cut
 
@@ -1006,7 +1056,7 @@ Método que aguarda alguma linha vinda do buffer.
 
 =pod
 
-=head3 reset()
+=head3  reset()
 
 =head4 Recebe
 
@@ -1032,7 +1082,7 @@ move a posição do ponteiro do cache para 0.
 
 =pod
 
-=head3 log_buffer()
+=head3  log_buffer()
 
 =head4 Recebe
 
@@ -1058,7 +1108,7 @@ Gera um log do buffer via console
 
 =pod
 
-=head3 alert_buffer()
+=head3  alert_buffer()
 
 =head4 Recebe
 
@@ -1124,7 +1174,7 @@ SortLine.prototype = {
 
 =pod
 
-=head3 set_data(data)
+=head3  set_data(data)
 
 =head4 Recebe
 
@@ -1150,7 +1200,7 @@ método que popula uma linha com dados.
 
 =pod
 
-=head3 get_column(column)
+=head3  get_column(column)
 
 =head4 Recebe
 
@@ -1177,7 +1227,7 @@ método que recebe o nome de uma coluna na linha.
 
 =pod
 
-=head3 get_values(columns)
+=head3  get_values(columns)
 
 =head4 Recebe
 
@@ -1189,7 +1239,7 @@ C<tmp>
 
 =head4 Descrição
 
-método que retorna o conteúdo da linha.
+Método que recebe o conteúdo de uma coluna na linha.
 
 =cut
 
@@ -1209,7 +1259,7 @@ método que retorna o conteúdo da linha.
 
 =pod
 
-=head3 all_columns()
+=head3  all_columns()
 
 =head4 Recebe
 
@@ -1217,11 +1267,11 @@ C<void>
 
 =head4 Retorna
 
-C<array> : Nome das colunas
+C<tmp>
 
 =head4 Descrição
 
-Método que retorna o nome de todas as colunas existentes naquela linha
+Método que coloca uma C<key> diferente para cada coluna na linha. (Obs: precisa ser verificada)
 
 =cut
 
@@ -1242,7 +1292,7 @@ Método que retorna o nome de todas as colunas existentes naquela linha
 
 =head2 CacheOfCaches
 
-Classe que representa um conjunto de caches.
+Classe que representa um conjunto de caches separados por colunas
 
 =head3 CacheOfCaches()
 
@@ -1252,11 +1302,9 @@ C<void>
 
 =head4 Retorna
 
-C<CacheOfCaches obj> : objeto de CacheOfCaches
+C<void>
 
 =head4 Descrição
-
-Esse é o construtor da classe
 
 =cut
 
@@ -1280,6 +1328,28 @@ function CacheOfCaches() {
       }
    };
 }
+
+/**
+
+=pod
+
+=head3  get_instance()
+
+=head4 Recebe
+
+C<void>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Devolve a instancia de um objeto singleton.
+
+=cut
+
+**/  
 
 CacheOfCaches.get_instance = function() {
    if(CacheOfCaches.id == null)
@@ -1326,13 +1396,50 @@ window.console.log("CoC: get howToGetDataLength()");
    push: function(line) {
       this.get_filter({}).push(line);
    },
-   _get_filter: function(filter) {
+ 
+       _get_filter: function(filter) {
       return this.filters[JSON.stringify(filter)];
    },
+   
+/**
+
+=pod
+
+=head3 ()
+
+=head4 Recebe
+
+C<filter> : um hash de filtros
+
+=head4 Retorna
+
+C<filter> : cache de filtros
+
+=head4 Descrição
+
+Método que retorna um cache de filtros
+
+=cut
+
+**/  
+   
    get_filter: function(filter) {
       var _this = this;
       return this.optimize_filters(filter);
    },
+   
+   /**
+
+   =pod
+
+   =head3 optimize_filters(filters)
+
+  Será alterada
+
+   =cut
+
+   **/ 
+   
    optimize_filters: function(filters){
       var cache = [];
       var tmp = this._get_filter(filters);
@@ -1354,7 +1461,13 @@ window.console.log("CoC: get howToGetDataLength()");
             filter[key].push(filters[key][i]);
             list.push(this._get_filter(filter))
          }
+         //window.console.log(list);
+         //window.console.log(filters[key].length);
+         //window.console.log(this._get_filter({}).get_filter_options(key).length / 2);
+         //window.console.log(this._get_filter({}).get_filter_options(key).length / 2);
          if(filters[key].length > this._get_filter({}).get_filter_options(key).length / 2) {
+         //if(filters[key].length > this._get_filter({}).get_filter_options(key).length / 2) {
+            //window.console.log("subtracao");
             var not = this.array_subtract(this._get_filter({}).get_filter_options(key), filters[key]);
             var fil = [];
             for(var k = 0; k < not.length; k++) {
@@ -1368,6 +1481,7 @@ window.console.log("CoC: get howToGetDataLength()");
          }
       }
       var ret = this.intersection(values);
+      //window.console.log(JSON.stringify(filters));
       this.filters[JSON.stringify(filters)] = ret;
       var _this = this;
       if(ret != null) {
@@ -1390,6 +1504,28 @@ window.console.log("CoC: get howToGetDataLength()");
       return ret;
    },
 
+/**
+
+=pod
+
+=head3 array_subtract()
+
+=head4 Recebe
+
+C<arr1>,C<arr1> : Array de valores
+
+=head4 Retorna
+
+C<array> : Array resultado da subtração do primeiro pelo segundo array.  
+
+=head4 Descrição
+
+Método que subtrai um array pelo outro para eliminar elementos.
+
+=cut
+
+**/
+   
    array_subtract: function(arr1, arr2){
       var sub = [];
       for(var i = 0; i < arr1.length; i++) {
@@ -1403,7 +1539,30 @@ window.console.log("CoC: get howToGetDataLength()");
       return sub;
    },
 
+/**
+
+=pod
+
+=head3 union(arr_cache)
+
+=head4 Recebe
+
+C<array> : C<array> de caches
+
+=head4 Retorna
+
+C<Cache object> : Cache da união dos caches passados. 
+
+=head4 Descrição
+
+Método que recebe um C<array> de caches retirando o primeiro elemento e colocando-o em outro cache, passando para C<return_union>.
+
+=cut
+
+**/
+   
    union: function(arr_cache){
+      //window.console.log("unindo: " + arr_cache);
       if(arr_cache.length < 1) return;
       var tmp1 = arr_cache.shift();
       var tmp2;
@@ -1414,9 +1573,31 @@ window.console.log("CoC: get howToGetDataLength()");
       } else {
          tmp2 = arr_cache.shift();
       }
-      return this.return_union(tmp1, tmp2);
+      return this.return_union(tmp1, tmp2); //tmp1 = cache
    },
 
+/**
+
+=pod
+
+=head3 return_union(C<cache1>, C<cache2>)
+
+=head4 Recebe
+
+C<array> : C<arrays> de caches
+
+=head4 Retorna
+
+C<cache> : retorna cache da união feita 
+
+=head4 Descrição
+
+Método que retorna o resultado da união feita entre dois caches, cria uma thread para processar os dados recebidos de C<_union>. 
+
+=cut
+
+**/
+   
    return_union: function(cache1, cache2) {
       cache1.reset();
       cache2.reset();
@@ -1429,25 +1610,55 @@ window.console.log("CoC: get howToGetDataLength()");
       setTimeout(function(){_this._union(tmp, cache1, cache2), 0});
       return tmp;
    },
+   
+/**
+
+=pod
+
+=head3 return_union(C<cache1>, C<cache2>)
+
+=head4 Recebe
+
+C<array> : C<arrays> de caches
+
+=head4 Retorna
+
+C<void>  
+
+=head4 Descrição
+
+Método responsável por fazer a união dos caches.
+
+=cut
+
+**/
 
    _union: function (obj, cache1, cache2){
       var _this = this;
       cache1.when_line(function(line1){
+         //window.console.log("Chegou linha do cache1: " + line1.id);
          cache2.when_line(function(line2){
+            //window.console.log("Chegou linha do cache2: " + line2.id);
+            //window.console.log("union  => " + (line1 != null ? line1.id : "null") + " --- " + (line2 != null ? line2.id : "null"));
             if(line1 == line2 && line1 == null) {
                obj.processing = false;
                return;
             } else if(line1 == null) {
+               //obj.put_on_index(line2, index);
                obj.push(line2)
             } else if(line2 == null) {
+               //obj.put_on_index(line2, index);
                obj.push(line1)
             } else if(line1.id == line2.id) {
+               //obj.put_on_index(line2, index);
                obj.push(line1);
             } else if(line1.id < line2.id) {
                cache2.redo();
+               //obj.put_on_index(line1, index);
                obj.push(line1);
             } else if(line1.id > line2.id) {
                cache1.redo();
+               //obj.put_on_index(line2, index);
                obj.push(line2)
             }
             setTimeout(function(){_this._union(obj, cache1, cache2)}, 0);
@@ -1455,7 +1666,31 @@ window.console.log("CoC: get howToGetDataLength()");
       });
    },
 
+/**
+
+=pod
+
+=head3 intersection(C<arr_cache>)
+
+=head4 Recebe
+
+C<array> : C<arrays> de caches
+
+=head4 Retorna
+
+C<cache> : retorna um cache
+
+=head4 Descrição
+
+Método que recebe um array de caches e retorna o retorno do método C<return_intersection> 
+
+=cut
+
+**/
+   
+   
    intersection: function(arr_cache){
+      //window.console.log("intercedendo: " + arr_cache);
       if(arr_cache.length < 1) return;
       var tmp1 = arr_cache.shift();
       var tmp2;
@@ -1469,6 +1704,30 @@ window.console.log("CoC: get howToGetDataLength()");
       return this.return_intersection(tmp1, tmp2);
    },
 
+/**
+
+=pod
+
+=head3 return_intersection(C<cache1>,C<cache2>)
+
+=head4 Recebe
+
+C<cache1> 
+
+C<cache2> 
+
+=head4 Retorna
+
+C<cache> : retorna o cache com o resultado.
+
+=head4 Descrição
+
+Método que retorna o resultado da interseção feita entre dois caches, cria uma thread para processar os dados recebidos de C<_intersection>. 
+
+=cut
+
+**/
+ 
    return_intersection: function(cache1, cache2) {
       cache1.reset();
       cache2.reset();
@@ -1481,15 +1740,41 @@ window.console.log("CoC: get howToGetDataLength()");
       setTimeout(function(){_this._intersection(tmp, cache1, cache2), 0});
       return tmp;
    },
+   
+/**
+
+=pod
+
+=head3 _intersection(C<obj, cache1, cache2>)
+
+=head4 Recebe
+
+C<cache1>
+
+C<cache2>
+
+=head4 Retorna
+
+C<cache> : retorna um cache
+
+=head4 Descrição
+
+Método responsável por fazer a interseção dos caches. 
+
+=cut
+
+**/
 
    _intersection: function(obj, cache1, cache2) {
       var _this = this;
       cache1.when_line(function(line1){
          cache2.when_line(function(line2){
+            //window.console.log("intersection  => " + (line1 != null ? line1.id : "null") + " --- " + (line2 != null ? line2.id : "null"));
             if(line2 == null || line1 == null) {
                obj.processing = false;
                return;
             } else if(line1.id == line2.id)
+               //obj.put_on_index(line1, index);
                obj.push(line1);
             else if(line1.id < line2.id) {
                cache2.redo();
@@ -1501,10 +1786,67 @@ window.console.log("CoC: get howToGetDataLength()");
       });
    },
 
+/**
+
+=pod
+
+=head3 subtract(C<tmp1, tmp2>)
+
+=head4 Recebe
+
+C<tmp1, tmp2>
+
+=head4 Retorna
+
+C<cache> : retorna o retorno do return_subtract
+
+=head4 Descrição
+
+Método que recebe dois caches e subtrai o primeiro com o segundo.
+
+=cut
+
+**/
+   
    subtract: function(tmp1, tmp2){
+      //window.console.log("subtraindo: " + arr_cache);
+      //if(arr_cache.length < 1) return;
+      //var tmp1 = arr_cache.shift();
+      //var tmp2;
+      //if(arr_cache.length < 1)
+      //   return tmp1;
+      //else if(arr_cache.length > 1) {
+      //   tmp2 = this.subtract(arr_cache);
+      //} else {
+      //   tmp2 = arr_cache.shift();
+      //}
       return this.return_subtract(tmp1, tmp2);
    },
 
+/**
+
+=pod
+
+=head3 return_subtract(C<cache1, cache2>)
+
+=head4 Recebe
+
+C<cache1> : C<cache> 
+
+C<cache2> : C<cache>
+
+=head4 Retorna
+
+C<cache> : retorna um cache com o resultado.
+
+=head4 Descrição
+
+Retorna o resultado da subtração dos caches e cria uma C<thread> para o processamento.
+
+=cut
+
+**/
+   
    return_subtract: function(cache1, cache2) {
       cache1.reset();
       cache2.reset();
@@ -1518,17 +1860,45 @@ window.console.log("CoC: get howToGetDataLength()");
       return tmp;
    },
 
+/**
+
+=pod
+
+=head3 _subtract(C<obj, cache1, cache2>)
+
+=head4 Recebe
+
+C<cache1>
+
+C<cache2>
+
+=head4 Retorna
+
+C<void>
+
+=head4 Descrição
+
+Método responsável por subratir os caches.
+
+=cut
+
+**/
+   
+   
    _subtract: function(obj, cache1, cache2) {
       var _this = this;
       cache1.when_line(function(line1){
          cache2.when_line(function(line2){
+            //window.console.log("subtract  => " + (line1 != null ? line1.id : "null") + " --- " + (line2 != null ? line2.id : "null"));
             if(line1 == null) {
                obj.processing = false;
                return;
             } else if(line2 == null){
+               //obj.put_on_index(line1, index);
                obj.push(line1);
             } else if(line1.id == line2.id){
             } else if(line1.id < line2.id) {
+               //obj.put_on_index(line1, index);
                obj.push(line1);
                cache2.redo();
             } else if(line1.id > line2.id) {
