@@ -697,7 +697,6 @@ das tabelas.
                   line_obj = new SortLine();
                   line_obj.set_data(line);
                }
-               var _this = this;
                this.insert(line_obj);
             }
          }
@@ -765,6 +764,10 @@ conta a quantidade de valores em cada coluna.
          this.export_filter(line)
       for(var i = 0; i < line.all_columns().length; i++) {
          var col = line.all_columns()[i];
+         if(this.on_new_line_with_col != null && typeof(this.on_new_line_with_col) == typeof(function(){})) {
+            var _this = this;
+            setTimeout(function(){_this.on_new_line_with_col(col, line)}, 0);
+         }
          if(this.options[col] == null)
             this.options[col] = {};
          if(this.options[col][line.get_column(col)] == null)
@@ -1174,7 +1177,17 @@ Esse é o construtor da classe
 function CacheOfCaches() {
    this.filters = {};
    this.filters["{}"] = new Cache();
-   this.filters["{}"].get_exported_filters(this.filters);
+   this._filterTrees = {};
+   //this.filters["{}"].get_exported_filters(this.filters);
+   this.filters["{}"].on_new_line_with_col = function(col, line){
+      if(this._filterTrees[col] == null) {
+         this._filterTrees[col] = new FilterNode();
+      }
+      if(! this._filterTrees[col].has_child(line.get_column(col))){
+         this._filterTrees[col].put_child(new Cache());
+      }
+      this._filterTrees[col].get_child(line.get_column(col)).value.push(line);
+   };
    var _this = this;
    this.filters["{}"].onStartPushing = function() {
       if(_this.table.onStartPushing != null && typeof(_this.table.onStartPushing) == typeof(function(){})) {
@@ -1183,7 +1196,7 @@ function CacheOfCaches() {
    };
    this.filters["{}"].onStopPushing = function() {
       if(_this.table.onStopPushing != null && typeof(_this.table.onStopPushing) == typeof(function(){})) {
-         _this.table.onStopPushing();
+         _this.table.onStopPushing()new Cache());
       }
    };
 }
@@ -1206,56 +1219,56 @@ CacheOfCaches.prototype = {
       var _this = this;
       return this.optimize_filters(filter);
    },
-   optimize_filters: function(filters){
-      var cache = [];
-      var tmp = this._get_filter(filters);
-      if(tmp != null) return tmp;
-      //window.console.log(filters);
-      var values = [];
-      for(var key in filters){
-         var list = [];
-         if (filters[key].length <= 0) return new Cache();
-         for(var i = 0; i < filters[key].length; i++){
-            var filter = {};
-            filter[key] = [];
-            filter[key].push(filters[key][i]);
-            list.push(this._get_filter(filter))
-         }
-         if(filters[key].length > this._get_filter({}).get_filter_options(key).length / 2) {
-            var not = this.array_subtract(this._get_filter({}).get_filter_options(key), filters[key]);
-            var fil = [];
-            for(var k = 0; k < not.length; k++) {
-               var tmp = {};
-               tmp[key] = [not[k]];
-               fil.push(this._get_filter(tmp));
-            }
-            values.push(this.subtract(this._get_filter({}), this.union(fil)));
-         } else {
-            values.push(this.union(list));
-         }
-      }
-      var ret = this.intersection(values);
-      this.filters[JSON.stringify(filters)] = ret;
-      var _this = this;
-      if(ret != null) {
-          ret.onStartPushing = function() {
-             if(_this.table.onStartPushing != null && typeof(_this.table.onStartPushing) == typeof(function(){})) {
-                _this.table.onStartPushing();
-                _this.push_num++;
-             }
-          };
-          ret.onStopPushing = function() {
-             if(_this.table.onStopPushing != null && typeof(_this.table.onStopPushing) == typeof(function(){})) {
-                _this.push_num--;
-                if(_this.push_num == 0) {
-                   _this.table.onStopPushing();
-                }
-             }
-          };
-          ret.filter_name = filters;
-      }
-      return ret;
-   },
+   //optimize_filters: function(filters){
+   //   var cache = [];
+   //   var tmp = this._get_filter(filters);
+   //   if(tmp != null) return tmp;
+   //   //window.console.log(filters);
+   //   var values = [];
+   //   for(var key in filters){
+   //      var list = [];
+   //      if (filters[key].length <= 0) return new Cache();
+   //      for(var i = 0; i < filters[key].length; i++){
+   //         var filter = {};
+   //         filter[key] = [];
+   //         filter[key].push(filters[key][i]);
+   //         list.push(this._get_filter(filter))
+   //      }
+   //      if(filters[key].length > this._get_filter({}).get_filter_options(key).length / 2) {
+   //         var not = this.array_subtract(this._get_filter({}).get_filter_options(key), filters[key]);
+   //         var fil = [];
+   //         for(var k = 0; k < not.length; k++) {
+   //            var tmp = {};
+   //            tmp[key] = [not[k]];
+   //            fil.push(this._get_filter(tmp));
+   //         }
+   //         values.push(this.subtract(this._get_filter({}), this.union(fil)));
+   //      } else {
+   //         values.push(this.union(list));
+   //      }
+   //   }
+   //   var ret = this.intersection(values);
+   //   this.filters[JSON.stringify(filters)] = ret;
+   //   var _this = this;
+   //   if(ret != null) {
+   //       ret.onStartPushing = function() {
+   //          if(_this.table.onStartPushing != null && typeof(_this.table.onStartPushing) == typeof(function(){})) {
+   //             _this.table.onStartPushing();
+   //             _this.push_num++;
+   //          }
+   //       };
+   //       ret.onStopPushing = function() {
+   //          if(_this.table.onStopPushing != null && typeof(_this.table.onStopPushing) == typeof(function(){})) {
+   //             _this.push_num--;
+   //             if(_this.push_num == 0) {
+   //                _this.table.onStopPushing();
+   //             }
+   //          }
+   //       };
+   //       ret.filter_name = filters;
+   //   }
+   //   return ret;
+   //},
 
    array_subtract: function(arr1, arr2){
       var sub = [];
@@ -1586,7 +1599,15 @@ FilterNode.prototype = {
       }
       this.children.push(node);
    },
-   put_on_path: function(node, path) {
+   put_on_path: function(value, path) {
+      var first = path.shift();
+      if(!this.has_child(first)) {
+      }
+      if(path.length <= 0) {
+         this.get_child(first).value = value;
+      } else {
+         this.get_child(first).put_on_path(value, path);
+      }
    },
    has_child: function(child_name) {
       for(var i = 0; i < this.children.length && this.children[i].name <= child_name; i++) {
@@ -1603,7 +1624,6 @@ FilterNode.prototype = {
          return path;
       }
       for(var i = 0; i < this.children.length; i++) {
-      //for(var i = 0; i < this.children.length && this.children[i].name <= name; i++) {
          if(this.children[i].has_kid(name)) {
             ret.push(this.children[i].name);
             var tmp = [];
@@ -1711,7 +1731,6 @@ FilterNode.prototype = {
          }
          for(var i = 0; i < stmp.length; i++)
             possible_array.push(stmp[i]);
-         //window.console.log("troca? " + (to_subtract(path, possible_array).length + to_add(path, possible_array).length) + " < " + (to_subtract(path, array).length + to_add(path, array).length));
          if((to_subtract(path, possible_array).length + to_add(path, possible_array).length) < (to_subtract(path, array).length + to_add(path, array).length))
             array = possible_array;
       }
@@ -1751,7 +1770,7 @@ FilterNode.prototype = {
       var closer;
       for(var i = 0; i < paths.length; i++){
          var changes = paths[i].number_of_changes_to_transform_in(path);
-         if(min == null || min > changes){
+         if(this.get_path(path).value != null && (min == null || min > changes)){
             min = changes;
             closer = paths[i];
          }

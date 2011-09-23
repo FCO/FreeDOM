@@ -324,8 +324,19 @@ SortTable.prototype = {
 };
 
 SortTable.prototype.transform2sortable = function(table) {
-   
+   table.howToGetData       = null;
+   table.howToGetDataLength = null;
    table = get_dom(table);
+   table.setHowToGetData = function(callback) {
+window.console.log("table: setHowToGetData()");
+      this.howToGetData = callback;
+      this.cache_of_caches.howToGetData = callback;
+   };
+   table.setHowToGetDataLength = function(callback) {
+window.console.log("table: setHowToGetDataLength()");
+      this.howToGetDataLength = callback;
+      this.cache_of_caches.howToGetDataLength = callback;
+   };
    table.draw_loop = function(){
       var _this = this;
       setInterval(function(){_this.draw()}, 100);
@@ -372,9 +383,18 @@ SortTable.prototype.transform2sortable = function(table) {
    };
    table.make_skell = function() {
       this.innerHTML = "";
-//window.console.log("make_skell");
+      var thead = document.createElement("thead");
+      var ttr   = document.createElement("tr");
+      for(var j = 0; j < this.columns.length; j++) {
+         var th = document.createElement("th");
+         th.innerHTML = this.columns[j];
+         ttr.appendChild(th);
+      }
+      thead.appendChild(ttr);
+      this.appendChild(thead);
+      var tbody = document.createElement("tbody");
+      this.appendChild(tbody);
       for(var i = 0; i < this.lines_per_page; i++) {
-//window.console.log("new line");
          var tr = document.createElement("tr");
          tr.table = this;
          tr.make_skell = function(data) {
@@ -392,7 +412,7 @@ SortTable.prototype.transform2sortable = function(table) {
             }
          };
          tr.make_skell();
-         this.appendChild(tr);
+         tbody.appendChild(tr);
       }
    };
    table.get_cache = function(){
@@ -424,7 +444,13 @@ SortTable.prototype.transform2sortable = function(table) {
       if(this.page - 1 >= 0) this.goto_page(this.page - 1);
    };
    table.next_page = function() {
-      if(this.get_cache().lines.length / this.lines_per_page > this.page + 1) this.goto_page(this.page + 1);
+      if(this.get_cache().total_length == -1) {
+         if(this.get_cache().lines.length / this.lines_per_page - 1 > this.page)
+            this.goto_page(this.page + 1);
+      } else {
+         if(this.get_cache().total_length / this.lines_per_page - 1 > this.page)
+            this.goto_page(this.page + 1);
+      }
    };
    table.gotoPage = function(page) {
       return this.goto_page(page - 1);
@@ -434,7 +460,7 @@ SortTable.prototype.transform2sortable = function(table) {
       var page_data = this.get_cache();
       if(page_data != null)
          page_data.current_line = this.page * this.lines_per_page;
-      var lines = this.getElementsByTagName("tr");
+      var lines = this.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
       for(var h = 0; h < lines.length; h++){
          var _this = this;
          var actual_line = lines[h];
@@ -505,6 +531,13 @@ O método Cache() é o construtor.
 
 **/
 
+
+/**
+
+the function passed to howToGetDataLength should return the size of total data (qtt of lines on database)
+
+**/
+
 function Cache() {
    if(Cache.id == null)
       Cache.id = 1;
@@ -519,9 +552,21 @@ function Cache() {
    this.filter_name       = null;
    this.options           = {};
    this.null_lines        = 0;
+   this.last_asked_line   = -1;
+   this.total_length      = -1;
+   this.unique_ids        = {};
 }
 
 Cache.prototype = {
+
+   set filter_name(name) {
+      if(name != null) {;
+         this._filter_name = name;
+      }
+   },
+   get filter_name() {
+      return this._filter_name;
+   },
 
 /**
 
@@ -638,10 +683,35 @@ onde cada chave contém o nome da coluna e cada valor o valor dessa coluna, ou um
          }
       }, 0);
       if(typeof(data) == typeof({}) && data.length == null) {
-         this.buffer.push(data);
+         var id = data["$FreeDOM::__UNIQUE_LINE_ID__"];
+         if(id != null) {
+            if(this.unique_ids[id] == null) {
+               this.unique_ids[id] = 0;
+            }
+            if(this.unique_ids[id] <= 0) {
+               this.unique_ids[id]++;
+               this.buffer.push(data);
+            }
+         } else {
+            this.buffer.push(data);
+         }
       } else {
-         for(var i = 0; i < data.length; i++)
-            this.buffer.push(data[i]);
+         for(var i = 0; i < data.length; i++) {
+            var line = data[i];
+            var id = line["$FreeDOM::__UNIQUE_LINE_ID__"];
+            delete line["$FreeDOM::__UNIQUE_LINE_ID__"];
+            if(id != null) {
+               if(this.unique_ids[id] == null) {
+                  this.unique_ids[id] = 0;
+               }
+               if(this.unique_ids[id] <= 0) {
+                  this.unique_ids[id]++;
+                  this.buffer.push(line);
+               }
+            } else {
+               this.buffer.push(line);
+            }
+         }
       }
       if(this.push_thread_id == null) {
          var _this = this;
@@ -818,6 +888,7 @@ exporta os filtros para o bridge.
          //window.console.log(filter_name);
          if(this.export_filters_to[filter_name] == null)
             this.export_filters_to[filter_name] = new Cache();
+            this.export_filters_to[filter_name].coc = this.coc;
          this.export_filters_to[filter_name].push(line);
       }
    },
@@ -897,17 +968,37 @@ Método que aguarda alguma linha vinda do buffer.
 
 **/  
    
-   wait_for_line: function(line_num, callback) {
+   wait_for_line: function(line_num, callback, do_not_get) {
+      if((!do_not_get || do_not_get == null) && this.howToGetData != null) {
+         if(line_num > this.last_asked_line && (line_num < this.total_length || line_num > 0)) {
+            var my_line = line_num;
+            var _this = this;
+            var first = _this.last_asked_line + 1;
+            var last  = my_line + 30;
+            this.last_asked_line = last;
+            setTimeout(function(){
+               var resp = _this.howToGetData(first, last, _this.filter_name);
+               _this.coc.get_filter({}).push(resp);
+               if(_this.coc.table.columns.length == 1 && _this.coc.table.columns[0] == "") {
+                  var values = [];
+                  for(var key in resp[0])
+                     values.push(key);
+                  _this.coc.table.set_columns(values);
+               }
+               //_this.push(resp);
+            });
+         }
+      }
       var line = this.lines[line_num];
       if(line != null) {
          callback(line);
       } else if(this.push_thread_id == null && ! this.processing){
-      //} else if(this.push_thread_id == null){
-         //window.console.log("No more pushed itens");
          callback(null);
+         var _this = this;
+         setTimeout(function(){_this.wait_for_line(line_num, callback, true)}, 5000);
       } else {
          var _this = this;
-         setTimeout(function(){_this.wait_for_line(line_num, callback)}, 0);
+         setTimeout(function(){_this.wait_for_line(line_num, callback, true)}, 100);
       }
    },
 
@@ -1174,6 +1265,8 @@ Esse é o construtor da classe
 function CacheOfCaches() {
    this.filters = {};
    this.filters["{}"] = new Cache();
+   this.filters["{}"].coc = this;
+   this.filters["{}"].filter_name = {};
    this.filters["{}"].get_exported_filters(this.filters);
    var _this = this;
    this.filters["{}"].onStartPushing = function() {
@@ -1196,6 +1289,40 @@ CacheOfCaches.get_instance = function() {
 };
 
 CacheOfCaches.prototype = {
+   set table(table) {
+      this._table = table;
+      if(this.table) {
+         this.get_filter({}).howToGetData       = this._table.howToGetData;
+         this.get_filter({}).howToGetDataLength = this._table.howToGetDataLength;
+      }
+   },
+   set howToGetData(callback) {
+window.console.log("CoC: howToGetData()");
+      this._how_to_get_data = callback;
+      for(var i in this.filters) {
+         this.filters[i].howToGetData = callback;
+      }
+   },
+   get howToGetData() {
+window.console.log("CoC: howToGetData()");
+      return this._how_to_get_data;
+   },
+   set howToGetDataLength(callback) {
+window.console.log("CoC: set howToGetDataLength()");
+      this._how_to_get_data_length = callback;
+      for(var i in this.filters) {
+window.console.log("setting: " + i);
+         this.filters[i].howToGetDataLength = callback;
+         this.filters[i].total_length = this.filters[i].howToGetDataLength(JSON.parse(i));
+      }
+   },
+   get howToGetDataLength() {
+window.console.log("CoC: get howToGetDataLength()");
+      return this._how_to_get_data_length;
+   },
+   get table() {
+      return this._table;
+   },
    push: function(line) {
       this.get_filter({}).push(line);
    },
@@ -1214,7 +1341,13 @@ CacheOfCaches.prototype = {
       var values = [];
       for(var key in filters){
          var list = [];
-         if (filters[key].length <= 0) return new Cache();
+         if (filters[key].length <= 0) {
+            var tmp = new Cache();
+            tmp.coc = this;
+            tmp.howToGetData       = this.howToGetData;
+            tmp.howToGetDataLength = this.howToGetDataLength;
+            return tmp;
+         }
          for(var i = 0; i < filters[key].length; i++){
             var filter = {};
             filter[key] = [];
@@ -1288,6 +1421,9 @@ CacheOfCaches.prototype = {
       cache1.reset();
       cache2.reset();
       var tmp = new Cache();
+      tmp.coc = this;
+      tmp.howToGetData       = this.howToGetData;
+      tmp.howToGetDataLength = this.howToGetDataLength;
       tmp.processing = true;
       var _this = this;
       setTimeout(function(){_this._union(tmp, cache1, cache2), 0});
@@ -1337,6 +1473,9 @@ CacheOfCaches.prototype = {
       cache1.reset();
       cache2.reset();
       var tmp = new Cache();
+      tmp.coc = this;
+      tmp.howToGetData       = this.howToGetData;
+      tmp.howToGetDataLength = this.howToGetDataLength;
       tmp.processing = true;
       var _this = this;
       setTimeout(function(){_this._intersection(tmp, cache1, cache2), 0});
@@ -1370,6 +1509,9 @@ CacheOfCaches.prototype = {
       cache1.reset();
       cache2.reset();
       var tmp = new Cache();
+      tmp.coc = this;
+      tmp.howToGetData       = this.howToGetData;
+      tmp.howToGetDataLength = this.howToGetDataLength;
       tmp.processing = true;
       var _this = this;
       setTimeout(function(){_this._subtract(tmp, cache1, cache2), 0});

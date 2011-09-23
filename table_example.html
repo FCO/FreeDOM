@@ -9,6 +9,20 @@
         var sortabletable = new SortTable();
         var my_table      = get_table();
         sortabletable.transform2sortable(my_table);
+        my_table.setHowToGetData(function(first_line, last_line, filter){
+           window.console.log("first_line: " + first_line + "; last_line: " + last_line + "; filter: " + JSON.stringify(filter));
+           //return create_lines(last_line - first_line);
+           var xreq = new XMLHttpRequest();
+           xreq.open("GET", "http://127.0.0.1:3000/query/" + first_line + "/" + last_line, false);
+           //xreq.send();
+           //var resp = JSON.parse(xreq.responseText);
+           //alert(xreq.responseText);
+           return [];
+        });
+        my_table.setHowToGetDataLength(function(filter){
+           window.console.log("filter: " + JSON.stringify(filter));
+           return 120;
+        });
         my_table.draw_loop();
         my_table.set_lines_per_page(10);
         my_table.onChangePage = function(page_num){
@@ -30,6 +44,7 @@
           var arr = [];
           for(var j = 0; j < 100; j++) {
              var tmp_line = {};
+             tmp_line["$FreeDOM::__UNIQUE_LINE_ID__"] = "la";
              tmp_line.col0 = i + " - " + j;
              tmp_line.col1 = Math.floor(Math.random() * 100);
              tmp_line.col2 = Math.floor(Math.random() * 100);
@@ -50,6 +65,28 @@
         my_table.set_filter(filter);
       }
       var called = 0;
+      function create_lines(lines) {
+         window.console.log("add_lines(" + lines + ")");
+         var arr = [];
+         var i = called++;
+         var my_table = get_table();
+         for(var j = 0; j < lines; j++) {
+            var tmp_line = {};
+            //tmp_line["$FreeDOM::__UNIQUE_LINE_ID__"] = "la";
+            tmp_line.col0 = i + " - " + j;
+            tmp_line.col1 = Math.floor(Math.random() * 100);
+            tmp_line.col2 = Math.floor(Math.random() * 100);
+            tmp_line.col3 = Math.floor(Math.random() * 100);
+            tmp_line.col4 = Math.floor(Math.random() * 100);
+            tmp_line.col5 = Math.floor(Math.random() * 100);
+            tmp_line.col6 = Math.floor(Math.random() * 100);
+            tmp_line.col7 = Math.floor(Math.random() * 100);
+            tmp_line.col8 = Math.floor(Math.random() * 100);
+            tmp_line.col9 = Math.floor(Math.random() * 100);
+            arr.push(tmp_line);
+         }
+         return arr;
+      }
       function add_lines(lines) {
          window.console.log("add_lines(" + lines + ")");
          var i = called++;
