@@ -427,6 +427,19 @@ window.console.log("table: setHowToGetDataLength()");
    };
 
    table.draw = function() {
+      if(this.last_draw == null)
+         this.last_draw = {};
+      if(
+         this.last_draw != null
+         && this.last_draw.page == this.page
+         && this.last_draw.filter === JSON.stringify(this.get_cache().filter_name)
+         && this.last_draw.length == this.get_cache().length()
+        )
+         return;
+      this.last_draw.page   = this.page;
+      this.last_draw.filter = JSON.stringify(this.get_cache().filter_name);
+      this.last_draw.length = this.get_cache().length();
+
       if(this.page == null) this.page = 0;
       this.make_skell();
       this.goto_page(this.page);
