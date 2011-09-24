@@ -1350,7 +1350,7 @@ CacheOfCaches.prototype = {
       var cache = this.filters[JSON.stringify(filter)];
       if(count == 1) {
          cache.howToGetData = this.howToGetData;
-         if(cache.total_length < 0)
+         if(this.howToGetDataLength && cache.total_length < 0)
             cache.total_length = this.howToGetDataLength(filter);
          cache.filter_name = filter;
       }
