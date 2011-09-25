@@ -1290,7 +1290,7 @@ Esse é o construtor da classe
 
 **/
 
-function CacheOfCaches() {
+function CacheOfCaches(cols) {
    if(CacheOfCaches.id == null)
       CacheOfCaches.id = 1;
    this.id = CacheOfCaches.id++;
@@ -1303,21 +1303,36 @@ function CacheOfCaches() {
    this.filters["{}"].get_exported_filters(this.filters);
    var _this = this;
    this.filters["{}"].onStartPushing = function() {
-      if(_this.table.onStartPushing != null && typeof(_this.table.onStartPushing) == typeof(function(){})) {
+      if(_this.table != null && _this.table.onStartPushing != null && typeof(_this.table.onStartPushing) == typeof(function(){})) {
          _this.table.onStartPushing();
       }
    };
    this.filters["{}"].onStopPushing = function() {
-      if(_this.table.onStopPushing != null && typeof(_this.table.onStopPushing) == typeof(function(){})) {
+      if(_this.table != null && _this.table.onStopPushing != null && typeof(_this.table.onStopPushing) == typeof(function(){})) {
          _this.table.onStopPushing();
       }
    };
+   if(cols != null) {
+      this.cols = {};
+      for(var i = 0; i < cols.length; i++) {
+window.console.log("criando coluna: " + cols[i].name);
+         if(this.cols[cols[i].name] == null)
+            this.cols[cols[i].name] = {};
+         this.cols[cols[i].name].type   = new Type(cols[i].type, cols[i].size, cols[i].nullable);
+         this.cols[cols[i].name].unique = cols[i].uniquenes;
+      }
+   }
 }
 
 CacheOfCaches.get_instance = function() {
 };
 
 CacheOfCaches.prototype = {
+   when_line: function(callback){this.get_filter({}).when_line(callback)},
+   operational_when_line: function(callback){this.get_filter({}).operational_when_line(callback)},
+   get_filter_options: function(col) {
+      return this.get_filter({}).get_filter_options(col);
+   },
    set table(table) {
       this._table = table;
       if(this.table) {
@@ -1353,7 +1368,29 @@ CacheOfCaches.prototype = {
       return this._table;
    },
    push: function(line) {
+      if(this.cols != null){
+         for(var col in line) {
+            if(this.cols[col] == null)
+               throw "Column '" + col + "' does not exist.";
+         }
+         for(var col in this.cols) {
+            if(this.cols[col].unique){
+               var filter = {};
+               filter[col] = [];
+               filter[col].push(line[col]);
+               if(this.filter_exists(filter))
+                  throw "Error inserting value '" + line[col] + "' on the unique field '" + col + "'";
+            }
+            this.cols[col].type.test(col, line[col]);
+         }
+      }
       this.get_filter({}).push(line);
+   },
+   filter_exists: function(filter_name){
+      if(this.filters[JSON.stringify(filter_name)] != null)
+         return true;
+      else
+         return false;
    },
    _get_filter: function(filter) {
       var count = 0;
@@ -1362,7 +1399,8 @@ CacheOfCaches.prototype = {
       }
       var cache = this.filters[JSON.stringify(filter)];
       if(count == 1) {
-         cache.howToGetData = this.howToGetData;
+         if(this.howToGetData != null)
+            cache.howToGetData = this.howToGetData;
          if(this.howToGetDataLength && cache.total_length < 0)
             cache.total_length = this.howToGetDataLength(filter);
          cache.filter_name = filter;
