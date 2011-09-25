@@ -1315,7 +1315,7 @@ function CacheOfCaches(cols) {
    if(cols != null) {
       this.cols = {};
       for(var i = 0; i < cols.length; i++) {
-window.console.log("criando coluna: " + cols[i].name);
+         //window.console.log("criando coluna: " + cols[i].name);
          if(this.cols[cols[i].name] == null)
             this.cols[cols[i].name] = {};
          this.cols[cols[i].name].type   = new Type(cols[i].type, cols[i].size, cols[i].nullable);
@@ -1412,7 +1412,7 @@ CacheOfCaches.prototype = {
       return this.optimize_filters(filter);
    },
    put: function(name, new_cache) {
-      window.console.log("put: ", JSON.stringify(name), new_cache);
+      //window.console.log("put: ", JSON.stringify(name), new_cache);
       if(this.filters == null)
          this.filters = {};
       this.filters[JSON.stringify(name)] = new_cache;
