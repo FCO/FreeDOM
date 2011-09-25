@@ -3,6 +3,48 @@
     <script src="./Cache.js"></script>
     <script src="./Database.js"></script>
     <script>
+       var ts = new TableSpace(); 
+
+       // create table teste (
+       //    col1 integer(2)      not null,
+       //    col2 integerrchar(3) not null unique,
+       ts.create_table("teste", 
+          [
+             {name: "col1", type: "integer", size: 2, nullable: false, uniquenes: false}, 
+             {name: "col2", type: "varchar", size: 3, nullable: false, uniquenes: true}
+          ]
+       );
+
+       // create table teste2 (
+       //    col3 integer(2)      not null,
+       //    col4 integerrchar(3) not null unique,
+       ts.create_table("teste2", 
+          [
+             {name: "col3", type: "integer", size: 2, nullable: false, uniquenes: false}, 
+             {name: "col4", type: "varchar", size: 3, nullable: false, uniquenes: true}
+          ]
+       );
+       // insert into teste(col1, col2) values (1, 'la');
+       ts.insert("teste", {col1: 1, col2: "la"});
+
+       // insert into teste(col1, col2) values (2, 'le');
+       ts.insert("teste", {col1: 2, col2: "le"}); 
+
+       // insert into teste(col1, col2) values (10, 'pa');
+       ts.insert("teste2", {col3: 10, col4: "pa"}); 
+
+       // insert into teste(col1, col2) values (20, 'pe');
+       ts.insert("teste2", {col3: 20, col4: "pe"});
+
+       // select teste.col1 Bla, teste.col2, lalala.col3 Bli, lalala.col4  from teste, teste2 lalala
+       var result = ts.select({"teste":{"col1":"Bla", "col2":null}, "lalala":{"col3":"Bli", "col4":""}}, {teste: null, teste2: "lalala"});
+
+       setTimeout(function(){
+          result.when_line(function(line){window.console.log(line.get_data())})
+          result.when_line(function(line){window.console.log(line.get_data())})
+          result.when_line(function(line){window.console.log(line.get_data())})
+          result.when_line(function(line){window.console.log(line.get_data())})
+       }, 1000);
     </script>
   </head>
   <body>
