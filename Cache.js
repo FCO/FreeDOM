@@ -280,7 +280,7 @@ C<void>
 
 Altera a tabela para que exiba as colunas selecionadas em C<columns>, na ordem em que foi passado. 
 
-Essa alteração só surtirá efeito após uma chamada explícita ao método C<draw()> ou, um ciclo da função C<draw_loop()>
+Essa alteração surtirá efeito somente após uma chamada explícita ao método C<draw()> ou, um ciclo da função C<draw_loop()>
 
 =head3 sort_by_column(C<col>)
 
@@ -514,7 +514,8 @@ window.console.log("table: setHowToGetDataLength()");
 
 =head2 Cache
 
-O cache é um conjunto de linhas da tabela.
+Cache é a classe responsável pelas linhas que poderão ser inseridas na tabela. Suas principais atribuições é criar linhas, atribuir valor 
+às linhas, recuperar o valor a ser inserido nas linhas e inserir as linhas na tabela.
 
 =head3 Cache()
 
@@ -524,11 +525,11 @@ C<void>
 
 =head4 Retorna
 
-C<Cache Object> : Um novo objeto da classe Cache
+C<Cache Object> : Um novo objeto da classe C<Cache>
 
 =head4 Descrição
 
-O método Cache() é o construtor.
+O método C<Cache()> é o construtor da classe C<Cache>, retornando um C<Cache Object> pronto para ser inicializado.
 
 =cut
 
@@ -645,7 +646,7 @@ C<inteiro> : Inteiro maior ou igual a zero.
 
 =head4 Descrição
 
-O método C<length> retorna a quantidade de linhas do cache.
+O método C<length> retorna a quantidade de linhas contidas no cache.
 
 =cut
 
@@ -835,7 +836,6 @@ C<void>
 
 =head4 Descrição
 
-Insere a linha recebida no cashe.
 Insere no cache cada linha para qual for chamado.
 
 =cut
@@ -1068,7 +1068,8 @@ C<void>
 
 =head4 Descrição
 
-move a posição do ponteiro do cache para 0.
+Move a posição do ponteiro do cache para 0.
+Posiciona como linha corrente/atual a primeira linha contida no C<Cache>
 
 =cut
 
