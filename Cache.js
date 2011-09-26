@@ -1095,14 +1095,14 @@ C<void>
 
 =head4 Descrição
 
-Gera um log do buffer via console
+Mostra no console do navegador o conteúdo do buffer.
 
 =cut
 
 **/   
    
    log_buffer: function(){
-      //window.console.log(this.buffer);
+      window.console.log(this.buffer);
    },
    
 /**
@@ -1121,7 +1121,7 @@ C<void>
 
 =head4 Descrição
 
-Gera um log do buffer via caixa de texto(alert)
+Apresenta uma caixa de mensagem (alert) mostrando o conteúdo do buffer.
 
 =cut
 
