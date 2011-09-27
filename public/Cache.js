@@ -955,7 +955,7 @@ C<void>
 
 =head4 Descrição
 
-Método utilizado para reconstruir uma linha quando solicitado.
+Método seta como corrente/atual a linha anteriormente (já processada) inserida no cache.
 
 =cut
 
