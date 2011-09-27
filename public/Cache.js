@@ -835,7 +835,7 @@ C<void>
 
 =head4 Descrição
 
-Insere a linha recebida no cashe.
+Insere no cache cada linha para qual for chamado.
 
 =cut
 
