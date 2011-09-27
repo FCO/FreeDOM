@@ -57,14 +57,39 @@ TableSpace.prototype = {
    // [{table1:alias1}, {table2:alias2}, {table1:alias1}]
       return tmp_ts.cartezian(caches);
    },
+   transform_filter: function(tree) {
+      if(tree.table != null && tree.col != null) {
+         var ret = {};
+         ret[tree.table] = {};
+         ret[tree.table][tree.col] = this.get_table(tree.table).get_filter_options(tree.col);
+         return ret;
+      }
+      var arrays = [];
+      for(var key in tree) {
+         var arr_values = [];
+         for(var i = 0; i < tree[key][col].length; i++) {
+            arr_values.push(tree[key][col][i])
+         }
+         arrays.push(arr_values);
+      }
+      var arr_rets = Functions.get_instance().operation(key, arr_values);
+      var ret = {};
+      for(var key in tree) {
+         ret[key] = {};
+         for(var col in tree[key]) {
+            ret[key][col] = arr_rets.shift();
+         }
+      }
+      return ret;
+   },
    cartezian: function(arr_caches){
       var first = arr_caches.shift();
       var last;
       if(first == null)
          return;
-      if(arr_caches < 1)
+      if(arr_caches.length < 1)
          return first;
-      if(arr_caches > 1)
+      if(arr_caches.length > 1)
          last = this.cartezian(arr_caches);
       else
          last = arr_caches.shift();
@@ -118,11 +143,63 @@ TableSpace.prototype = {
             new_line.set_data(data);
             obj.push(new_line);
          } else {
-            cache2.redo();
+            line--;
             time2wait = 1000;
          }
          setTimeout(function(){_this._cartezian2part(obj, line1, cache2, line)}, time2wait);
       }, true);
+   },
+};
+
+function Functions() {
+}
+
+Functions.get_instance = function(){
+   if(Functions._instance == null)
+      Functions._instance = new Functions();
+   return Functions._instance;
+};
+
+Functions.prototype = {
+   operation: function(operation, array) {
+      var first = array.shift();
+      var last;
+      if(array.length < 1)
+         throw "Array's length should gretter or equal of 2";
+      if(array.length > 1)
+         last = this.operation(operation, array);
+      else
+         last = array.shift();
+      return this[operation](first, last);
+   },
+   loop_test: function(array1, array2, test){
+      var resp1 = [];
+      var resp2 = [];
+      var c1 = {};
+      var c2 = {};
+      for(var i = 0; i < array1.length; i++)
+         for(var j = 0; j < array2.length; j++)
+            if(test(array1[i], array2[j])) {
+               if(c1[array1[i]] == null) {
+                  c1[array1[i]] = true;
+                  resp1.push(array1);
+               }
+               if(c2[array2[j]] == null) {
+                  c2[array2[j]] = true;
+                  resp2.push(array2);
+               }
+            }
+      return [c1, c2];
+   },
+   eq: function(array1, array2) {
+      return loop_test(function(val1, val2){
+         return val1 == val2;
+      });
+   },
+   ne: function(array1, array2) {
+      return loop_test(function(val1, val2){
+         return val1 != val2;
+      });
    },
 };
 
