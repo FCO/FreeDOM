@@ -855,7 +855,7 @@ Insere no cache cada linha para qual for chamado.
 
 =head4 Recebe
 
-C<line> : recebe as linhas do cache
+C<line> : recebe uma linha
 
 =head4 Retorna
 
@@ -863,7 +863,9 @@ C<void>
 
 =head4 Descrição
 
-conta a quantidade de valores em cada coluna.
+Invoca/conjura o método C<export_filter(line)> que irá popular os caches necessários além de contar a quantidade de ocorrência
+de valores em cada coluna do cache.
+
 
 =cut
 
