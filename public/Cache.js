@@ -1,6 +1,6 @@
 /**
 
-epod
+=pod
 
 =head1 NAME
 
@@ -1120,7 +1120,7 @@ Mostra o conteúdo do C<buffer> no console do navegador.
 **/   
    
    log_buffer: function(){
-      //window.console.log(this.buffer);
+      window.console.log(this.buffer);
    },
    
 /**
