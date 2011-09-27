@@ -911,7 +911,10 @@ C<void>
 
 =head4 Descrição
 
-exporta os filtros para o bridge.
+O método popula o cache C<coluna>-C<valor> (caso não exista, cria um cache adequado) com a linha recebida. A quantidade de 
+caches criados/populados será de acordo com a quantidade de colunas que a linha possuir. O par C<coluna>-C<valor>
+servirá como nomenclatura para filtro associado ao cache criado/populado.
+
 
 =cut
 
