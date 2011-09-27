@@ -72,7 +72,11 @@ Cache.js
 
 =head1 API Externa
 
-Aqui serão descritas as classes contidas nesse arquivo
+Descrição das classes contidas nesse arquivo
+
+
+
+
 
 =head2 SortTable
 
@@ -80,7 +84,7 @@ Classe que faz a transformação de uma tabela comum da C<DOM> numa tabela ordenav
 
 =head3 Descrição
 
-Representa uma tabela ordenável-filtrável e converte tabelas comuns (C<DOM>) para uso como tal.
+Representa uma tabela ordenável-filtrável além de converter tabelas comuns (C<DOM>) para uso como tal.
 
 =head3 transform2sortable(C<DOMTableObject> | C<jQueryTableObject>)
 
@@ -147,7 +151,7 @@ C<void>
 
 =head4 Descrição
 
-Inicia um loop assíncrono que, a cada laço, redesenha a tabela em tela.
+Inicia um loop assíncrono que, a cada laço, a tabela é redesenhada em tela.
 
 =head3 getPage()
 
@@ -981,7 +985,12 @@ C<void>
 
 =head4 Descrição
 
-Método assíncrono que muda a posição do ponteiro do cache de acordo com a linha selecionada.
+Método assíncrono que recebe uma função callback. A função callback será executada quando a linha atual estiver disponível.
+
+  cache.when_line(function (line){
+    alert(line)
+  });
+
 
 =cut
 
@@ -1004,7 +1013,9 @@ Método assíncrono que muda a posição do ponteiro do cache de acordo com a linha 
 
 =head4 Recebe
 
-C<line_num, callback> : Recebe o número da linha com o line_num
+C<line_num> : inteiro
+
+C<callback>: função a ser executada.
 
 =head4 Retorna
 
@@ -1012,7 +1023,9 @@ C<void>
 
 =head4 Descrição
 
-Método que aguarda alguma linha vinda do buffer.
+Método assíncrono que recebe o número da linha a ser aguardada e uma função C<callback>. A função C<callback> será executada quando a 
+linha referente a C<line_num> estiver disponível.
+
 
 =cut
 
@@ -1074,7 +1087,7 @@ C<void>
 
 =head4 Descrição
 
-move a posição do ponteiro do cache para 0.
+Configura a primeira linha contida no C<cache> como a linha atual. A contagem de linhas do C<cache> é inicializada pelo número C<0>
 
 =cut
 
@@ -1100,7 +1113,7 @@ C<void>
 
 =head4 Descrição
 
-Gera um log do buffer via console
+Mostra o conteúdo do C<buffer> no console do navegador.
 
 =cut
 
@@ -1126,7 +1139,7 @@ C<void>
 
 =head4 Descrição
 
-Gera um log do buffer via caixa de texto(alert)
+Mostra o conteúdo do C<buffer> em uma caixa de mensagem (alert) dentro do navegador.
 
 =cut
 
@@ -1157,7 +1170,7 @@ C<void> :
 
 =head4 Descrição
 
-O método SortLine() é o construtor.
+O método C<SortLine()> é o construtor da classe C<SortLine>. 
 
 =cut
 
@@ -1184,7 +1197,7 @@ SortLine.prototype = {
 
 =head4 Recebe
 
-C<data> : dados de uma linha
+C<data> : C<hash> com o(s) dados a serem inserido(s) na linha
 
 =head4 Retorna
 
@@ -1192,7 +1205,7 @@ C<void>
 
 =head4 Descrição
 
-método que popula uma linha com dados.
+Método que preenche a linha com o seu respectivo dado.
 
 =cut
 
@@ -1218,12 +1231,12 @@ C<column> :
 
 =head4 Descrição
 
-método que recebe o nome de uma coluna na linha.
+Método que retorna os dados associados a coluna informada. (contidos na linha ou no cache completo????)
 
 =cut
 
 **/
-
+//quem é data??? todos os dados????
    get_column: function(column) {
       //window.console.log("get_column(" + column + ") == " + this.data[column]);
       return this.data[column];
@@ -1237,15 +1250,16 @@ método que recebe o nome de uma coluna na linha.
 
 =head4 Recebe
 
-C<column> : recebe colunas 
+C<column> : Nome das colunas associadas a uma linha
 
 =head4 Retorna
 
-C<tmp>
+C<Array> : Array contendo os dados encontrados.
 
 =head4 Descrição
 
 método que retorna o conteúdo da linha.
+Método que retorna o dados associados as colunas informadas.
 
 =cut
 
@@ -1277,7 +1291,7 @@ C<array> : Nome das colunas
 
 =head4 Descrição
 
-Método que retorna o nome de todas as colunas existentes naquela linha
+Método que retorna o nome de todas as colunas existentes nas linhas contidas no C<cache>
 
 =cut
 
@@ -1312,7 +1326,7 @@ C<CacheOfCaches obj> : objeto de CacheOfCaches
 
 =head4 Descrição
 
-Esse é o construtor da classe
+Método construtor da classe C<CacheOfCaches>. 
 
 =cut
 
