@@ -524,7 +524,28 @@ window.console.log("table: setHowToGetDataLength()");
 
 =head2 Cache
 
-O cache é um conjunto de linhas da tabela.
+Cache é a classe responsável pelas linhas (C<SortLine>) que poderão ser inseridas na tabela. Suas principais atribuições são:
+
+Criar linhas
+  
+  var cache = new Cache();
+  cache.push({col1:"valor1", col2:"valor2"});
+  
+  // Ou
+  
+  var cache = new Cache();
+  cache.push([{col1:"valor3", col2:"valor4"}, {col1:"valor5", col2:"valor6"}]);
+  
+Sendo que o hash C<{col1:"valor1"}> se tornará uma instância da classe C<SortLine>.
+
+Recuperar o valor inserido nas linhas
+	
+  cache.when_line(function(line){ alert(line) });
+  
+  //ou
+  
+  cache.wait_for_line(num_linha, function(line){ alert(line) })
+  
 
 =head3 Cache()
 
@@ -534,11 +555,11 @@ C<void>
 
 =head4 Retorna
 
-C<Cache Object> : Um novo objeto da classe Cache
+C<Cache Object> : Um novo objeto da classe C<Cache>
 
 =head4 Descrição
 
-O método Cache() é o construtor.
+O método C<Cache()> é o construtor da classe C<Cache>, retornando um C<Cache Object> pronto para ser inicializado.
 
 =cut
 
@@ -630,7 +651,7 @@ C<obj> : Retorna o próprio objeto recebido
 
 =head4 Descrição
 
-O método C<get_exported_filters> seta um objeto a ser chamado no caso de filtros serem exportados.
+O método C<get_exported_filters> retorna um objeto que poderá ser usado como auxiliar na operação de filtragens.
 
 =cut
 
@@ -658,7 +679,7 @@ C<inteiro> : Inteiro maior ou igual a zero.
 
 =head4 Descrição
 
-O método C<length> retorna a quantidade de linhas do cache.
+O método C<length> retorna a quantidade de linhas contidas no cache.
 
 =cut
 
@@ -690,6 +711,8 @@ onde cada chave contém o nome da coluna e cada valor o valor dessa coluna, ou um
 =cut
 
 **/
+//data = dados que vieram do howToGetData??? Se sim, data = vazio e data=nulo se não, faz um loop com o tamanho da quantidade de informa-
+//ções de data, colocando os dados de data nas linhas correspondentes.
 
    push: function(data){
       var _this = this;
