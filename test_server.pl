@@ -3,9 +3,16 @@ use Mojolicious::Lite;
 use FreeDOM::Test;
 use Data::Dumper;
 use Mojo::JSON;
+use FindBin qw/$Bin/;
 
-my $db = FreeDOM::Test->connect("dbi:SQLite:./FreeDOM.sql");
+my $db = FreeDOM::Test->connect("dbi:SQLite:./examples/FreeDOM.sql");
 my $data_test = $db->resultset("DataTest");
+
+print "$/Examples:$/$/";
+
+print "\t", substr($_, length($Bin . "/public/"), length($_)), $/ while<$Bin/public/*.html>;
+
+print $/;
 
 any 'query/:first/:last' => [format => ['json']] => sub{
    my $self = shift;
@@ -41,4 +48,4 @@ any 'count' => sub{
 };
 
 
-app->start;
+app->start("daemon");
