@@ -789,7 +789,7 @@ C<do_it_again> : variável que contém um booleano C<false> utilizado quando não h
 
 =head4 Descrição
 
-O método C<push_thread> fica executando enquanto há informação no buffer e retira-a do buffer e a joga nas linhas 
+O método C<push_thread> é executado enquanto há informação no buffer, retirando-a do buffer e a jogando o que for extraído nas linhas 
 das tabelas.
 
 =cut
@@ -867,8 +867,8 @@ C<void>
 
 =head4 Descrição
 
-Invoca/conjura o método C<export_filter(line)> que irá popular os caches necessários além de contar a quantidade de ocorrência
-de valores em cada coluna do cache.
+Invoca/conjura o método C<export_filter(line)> que irá popular os C<cache>s necessários além de contar a quantidade de ocorrência
+de valores em cada coluna do C<cache>.
 
 
 =cut
@@ -959,7 +959,7 @@ C<void>
 
 =head4 Descrição
 
-Método seta como corrente/atual a linha anteriormente (já processada) inserida no cache.
+Método configura como corrente/atual a linha anteriormente (já processada) inserida no cache.
 
 =cut
 
@@ -1312,7 +1312,8 @@ Método que retorna o nome de todas as colunas existentes nas linhas contidas no 
 
 =head2 CacheOfCaches
 
-Classe que representa um conjunto de caches.
+Classe que representa um conjunto de caches. Esta classe tem por objetivo guardar os caches criados através de atividades como filtragens, por exemplo, 
+e disponibilizá-los de forma rápida e eficaz quando os dados contidos nos caches armazenados forem requisitados.
 
 =head3 CacheOfCaches()
 
