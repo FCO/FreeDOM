@@ -5,7 +5,7 @@ use Data::Dumper;
 use Mojo::JSON;
 use FindBin qw/$Bin/;
 
-my $db = FreeDOM::Test->connect("dbi:SQLite:./example/FreeDOM.sql");
+my $db = FreeDOM::Test->connect("dbi:SQLite:./examples/FreeDOM.sql");
 my $data_test = $db->resultset("DataTest");
 
 print "$/Examples:$/$/";
