@@ -1,6 +1,7 @@
 const EventEmitter = require("events");
 class Index extends EventEmitter {
     constructor(name) {
+        super();
         this.name       = name;
         this.data       = {};
         this.willEmit   = {};
@@ -9,7 +10,7 @@ class Index extends EventEmitter {
     add(value, line) {
         if(!(value in this.data))
             this.data[value] = [];
-        this.data[line].push(line);
+        this.data[value].push(line);
         if(!(value in this.willEmit)) {
             this.willEmit[value] = setTimeout(
                 () => {
@@ -24,3 +25,5 @@ class Index extends EventEmitter {
         return Object.keys(this.data);
     }
 }
+
+module.exports = Index;

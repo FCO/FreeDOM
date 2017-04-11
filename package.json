@@ -4,12 +4,16 @@
   "description": "",
   "main": "freedom.js",
   "scripts": {
-    "build":    "browserify worker.js > complete_worker.js && browserify main.js > complete_main.js",
-    "test":     "echo \"Error: no test specified\" && exit 1"
+    "prebuild": "npm install",
+    "build": "browserify worker.js > complete_worker.js && browserify main.js > complete_main.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prestart": "npm run build",
+    "start": "http-server"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "browserify": "^14.3.0"
+    "browserify": "^14.3.0",
+    "watchify": "^3.9.0"
   }
 }
